@@ -3,6 +3,7 @@
  * @ C part of the kernel
  */
 
+#include "i8259.h"
 #include "lib.h"
 #include "multiboot.h"
 #include "types.h"
@@ -131,6 +132,7 @@ void entry(uint32_t magic, uint32_t addr) {
 
     /* Initialise devices, memory, filesystem, enable device interrupts on the
      * PIC, any other initialisation routines... */
+    init_i8259();
 
     /* Enable interrupts */
     /* QEMU will triple fault and simply close without any output if the IDT is
