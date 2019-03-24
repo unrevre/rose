@@ -4,6 +4,7 @@
  */
 
 #include "i8259.h"
+#include "idt.h"
 #include "lib.h"
 #include "multiboot.h"
 #include "types.h"
@@ -129,6 +130,10 @@ void entry(uint32_t magic, uint32_t addr) {
         tss.esp0 = 0x400000;
         ltr(KERNEL_TSS);
     }
+
+    /* Load and initialise IDT */
+    lidt(idt_desc_ptr);
+    init_idt();
 
     /* Initialise devices, memory, filesystem, enable device interrupts on the
      * PIC, any other initialisation routines... */
