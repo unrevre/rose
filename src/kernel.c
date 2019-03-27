@@ -6,7 +6,9 @@
 #include "i8259.h"
 #include "idt.h"
 #include "lib.h"
+#include "memory.h"
 #include "multiboot.h"
+#include "page.h"
 #include "types.h"
 #include "x86_desc.h"
 
@@ -127,7 +129,7 @@ void entry(uint32_t magic, uint32_t addr) {
 
         tss.ldt_segment_selector = KERNEL_LDT;
         tss.ss0 = KERNEL_DS;
-        tss.esp0 = 0x400000;
+        tss.esp0 = KERNEL_BASE;
         ltr(KERNEL_TSS);
     }
 
@@ -138,6 +140,13 @@ void entry(uint32_t magic, uint32_t addr) {
     /* Initialise devices, memory, filesystem, enable device interrupts on the
      * PIC, any other initialisation routines... */
     init_i8259();
+
+    /* Map kernel memory block (including video memory) */
+    map_memory_block(VMEM_KERNEL, PMEM_KERNEL, SUPERVISOR);
+
+    /* Enable paging */
+    init_paging(page_directory);
+    enable_paging();
 
     /* Enable interrupts */
     /* QEMU will triple fault and simply close without any output if the IDT is
