@@ -56,4 +56,6 @@ void init_idt(void) {
     SET_IDT(17, alignment_check);
     SET_IDT(18, machine_check);
     SET_IDT(19, simd_fp_exception);
+
+    (void)trap_gate;
 }
