@@ -22,6 +22,8 @@
 .globl machine_check
 .globl simd_fp_exception
 
+.globl pit
+
 .macro HANDLE_NULL INT
 \INT :
     pushl   %eax
@@ -81,3 +83,5 @@ HANDLE_NULL floating_point_error
 HANDLE_NULL alignment_check
 HANDLE_NULL machine_check
 HANDLE_NULL simd_fp_exception
+
+HANDLE_NULL pit

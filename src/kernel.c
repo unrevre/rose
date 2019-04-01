@@ -9,6 +9,7 @@
 #include "memory.h"
 #include "multiboot.h"
 #include "page.h"
+#include "pit.h"
 #include "types.h"
 #include "x86_desc.h"
 
@@ -140,6 +141,7 @@ void entry(uint32_t magic, uint32_t addr) {
     /* Initialise devices, memory, filesystem, enable device interrupts on the
      * PIC, any other initialisation routines... */
     init_i8259();
+    init_pit();
 
     /* Map kernel memory block (including video memory) */
     map_memory_block(VMEM_KERNEL, PMEM_KERNEL, SUPERVISOR);
@@ -151,6 +153,8 @@ void entry(uint32_t magic, uint32_t addr) {
     /* Enable interrupts */
     /* QEMU will triple fault and simply close without any output if the IDT is
      * not set up correctly */
+    enable_irq(IRQ_PIT);
+
     printf("Enabling Interrupts\n");
     sti();
 

@@ -25,6 +25,9 @@
  * to the PIC to declare the interrupt finished */
 #define EOI                 0x60
 
+/* IRQ vectors */
+#define IRQ_PIT             0x0
+
 /* Initialise both PICs */
 void init_i8259(void);
 

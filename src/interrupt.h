@@ -25,4 +25,6 @@ void alignment_check(void);
 void machine_check(void);
 void simd_fp_exception(void);
 
+void pit(void);
+
 #endif /* INTERRUPT_H */
