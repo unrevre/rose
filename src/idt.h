@@ -7,6 +7,7 @@
 #define IDT_H
 
 #define IDT_PIT             0x20
+#define IDT_RTC             0x28
 
 void init_idt(void);
 

@@ -26,5 +26,6 @@ void machine_check(void);
 void simd_fp_exception(void);
 
 void pit(void);
+void rtc(void);
 
 #endif /* INTERRUPT_H */

@@ -27,6 +27,7 @@
 
 /* IRQ vectors */
 #define IRQ_PIT             0x0
+#define IRQ_RTC             0x8
 
 /* Initialise both PICs */
 void init_i8259(void);

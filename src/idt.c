@@ -58,6 +58,7 @@ void init_idt(void) {
     SET_IDT(19, simd_fp_exception);
 
     SET_IDT(IDT_PIT, pit);
+    SET_IDT(IDT_RTC, rtc);
 
     (void)trap_gate;
 }

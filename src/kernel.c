@@ -10,6 +10,7 @@
 #include "multiboot.h"
 #include "page.h"
 #include "pit.h"
+#include "rtc.h"
 #include "types.h"
 #include "x86_desc.h"
 
@@ -142,6 +143,7 @@ void entry(uint32_t magic, uint32_t addr) {
      * PIC, any other initialisation routines... */
     init_i8259();
     init_pit();
+    init_rtc();
 
     /* Map kernel memory block (including video memory) */
     map_memory_block(VMEM_KERNEL, PMEM_KERNEL, SUPERVISOR);
@@ -154,6 +156,7 @@ void entry(uint32_t magic, uint32_t addr) {
     /* QEMU will triple fault and simply close without any output if the IDT is
      * not set up correctly */
     enable_irq(IRQ_PIT);
+    enable_irq(IRQ_RTC);
 
     printf("Enabling Interrupts\n");
     sti();
