@@ -5,6 +5,7 @@
 
 #include "i8259.h"
 #include "idt.h"
+#include "keyboard.h"
 #include "lib.h"
 #include "memory.h"
 #include "multiboot.h"
@@ -143,6 +144,7 @@ void entry(uint32_t magic, uint32_t addr) {
      * PIC, any other initialisation routines... */
     init_i8259();
     init_pit();
+    init_kbd();
     init_rtc();
 
     /* Map kernel memory block (including video memory) */
@@ -156,6 +158,7 @@ void entry(uint32_t magic, uint32_t addr) {
     /* QEMU will triple fault and simply close without any output if the IDT is
      * not set up correctly */
     enable_irq(IRQ_PIT);
+    enable_irq(IRQ_KBD);
     enable_irq(IRQ_RTC);
 
     printf("Enabling Interrupts\n");

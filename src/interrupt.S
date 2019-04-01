@@ -23,6 +23,7 @@
 .globl simd_fp_exception
 
 .globl pit
+.globl kbd
 .globl rtc
 
 .macro HANDLE_NULL INT
@@ -86,4 +87,5 @@ HANDLE_NULL machine_check
 HANDLE_NULL simd_fp_exception
 
 HANDLE_NULL pit
+HANDLE_NULL kbd
 HANDLE_NULL rtc

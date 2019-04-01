@@ -27,6 +27,7 @@
 
 /* IRQ vectors */
 #define IRQ_PIT             0x0
+#define IRQ_KBD             0x1
 #define IRQ_RTC             0x8
 
 /* Initialise both PICs */
