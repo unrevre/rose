@@ -10,6 +10,12 @@
 #define NUM_ROWS    25
 #define ATTRIB      0x7
 
+#define CURSOR_HIGH         0xE
+#define CURSOR_LOW          0xF
+
+#define VGA_INDEX_REGISTER  0x3D4
+#define VGA_DATA_REGISTER   0x3D5
+
 static int screen_x;
 static int screen_y;
 static char* video_mem = (char*)VIDEO;
@@ -21,6 +27,8 @@ void backspace(void) {
     int32_t offset = screen_x + NUM_COLS * screen_y;
     *(uint8_t*)(video_mem + (offset << 1)) = ' ';
     *(uint8_t*)(video_mem + (offset << 1) + 1) = ATTRIB;
+
+    blink();
 }
 
 void newline(void) {
@@ -31,6 +39,8 @@ void newline(void) {
         --screen_y;
         scroll();
     }
+
+    blink();
 }
 
 void scroll(void) {
@@ -55,6 +65,17 @@ void clear(void) {
         *(uint8_t*)(video_mem + (i << 1)) = ' ';
         *(uint8_t*)(video_mem + (i << 1) + 1) = ATTRIB;
     }
+
+    blink();
+}
+
+void blink(void) {
+    uint16_t position = screen_x + NUM_COLS * screen_y;
+
+    outb(CURSOR_LOW, VGA_INDEX_REGISTER);
+    outb((uint8_t)(position & 0xFF), VGA_DATA_REGISTER);
+    outb(CURSOR_HIGH, VGA_INDEX_REGISTER);
+    outb((uint8_t)((position >> 8) & 0xFF), VGA_DATA_REGISTER);
 }
 
 /* Standard printf().
@@ -188,6 +209,8 @@ void putc(uint8_t c) {
             scroll();
         }
     }
+
+    blink();
 }
 
 /* Convert a number to its ASCII representation, with base "radix" */

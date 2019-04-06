@@ -12,6 +12,7 @@ void backspace(void);
 void newline(void);
 void scroll(void);
 void clear(void);
+void blink(void);
 
 int32_t printf(int8_t* format, ...);
 int32_t puts(int8_t* s);
