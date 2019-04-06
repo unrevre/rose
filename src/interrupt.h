@@ -29,4 +29,6 @@ void pit(void);
 void rtc(void);
 void kbd(void);
 
+void syscall(void);
+
 #endif /* INTERRUPT_H */

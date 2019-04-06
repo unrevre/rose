@@ -10,6 +10,8 @@
 #define IDT_KBD             0x21
 #define IDT_RTC             0x28
 
+#define IDT_SYS             0x80
+
 void init_idt(void);
 
 #endif /* IDT_H */

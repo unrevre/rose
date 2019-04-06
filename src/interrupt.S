@@ -26,6 +26,8 @@
 .globl kbd
 .globl rtc
 
+.globl syscall
+
 .macro HANDLE_NULL INT
 \INT :
     pushl   %eax
@@ -89,3 +91,40 @@ HANDLE_NULL simd_fp_exception
 HANDLE_NULL pit
 HANDLE_NULL kbd
 HANDLE_NULL rtc
+
+#define NSYS 6
+
+syscall:
+    decl    %eax
+    cmpl    $NSYS, %eax
+    jae     invalid_call
+
+    pushl   %eax
+    pushl   %ebp
+    pushl   %edi
+    pushl   %esi
+    pushl   %edx
+    pushl   %ecx
+    pushl   %ebx
+    call    *call_vector(, %eax, 4)
+    popl    %ebx
+    popl    %ecx
+    popl    %edx
+    popl    %esi
+    popl    %edi
+    popl    %ebp
+    addl    $4, %esp
+    iret
+
+invalid_call:
+    movl    $-1, %eax
+    iret
+
+.align 4
+call_vector:
+.long   halt
+.long   execute
+.long   read
+.long   write
+.long   open
+.long   close

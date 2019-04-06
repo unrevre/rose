@@ -61,5 +61,6 @@ void init_idt(void) {
     SET_IDT(IDT_KBD, interrupt_gate, kbd);
     SET_IDT(IDT_RTC, interrupt_gate, rtc);
 
-    (void)trap_gate;
+    SET_IDT(IDT_SYS, trap_gate, syscall);
+    idt[IDT_SYS].dpl = 3;
 }
