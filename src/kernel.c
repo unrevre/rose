@@ -5,13 +5,13 @@
 
 #include "i8259.h"
 #include "idt.h"
-#include "keyboard.h"
 #include "lib.h"
 #include "memory.h"
 #include "multiboot.h"
 #include "page.h"
 #include "pit.h"
 #include "rtc.h"
+#include "tty.h"
 #include "types.h"
 #include "x86_desc.h"
 
@@ -144,8 +144,9 @@ void entry(uint32_t magic, uint32_t addr) {
      * PIC, any other initialisation routines... */
     init_i8259();
     init_pit();
-    init_kbd();
     init_rtc();
+
+    init_tty();
 
     /* Map kernel memory block (including video memory) */
     map_memory_block(VMEM_KERNEL, PMEM_KERNEL, SUPERVISOR);

@@ -9,7 +9,7 @@
 #define KBD_DATA_PORT           0x60
 #define KBD_COMMAND_PORT        0x64
 
-void init_kbd(void);
+#define KBD_CONTINUE            0x30
 
 void handle_kbd(void);
 
