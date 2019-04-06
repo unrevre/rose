@@ -14,7 +14,42 @@ static int screen_x;
 static int screen_y;
 static char* video_mem = (char*)VIDEO;
 
+void backspace(void) {
+    screen_x = (screen_x + NUM_COLS - 1) % NUM_COLS;
+    screen_y = screen_y - (screen_x / (NUM_COLS - 1));
+
+    int32_t offset = screen_x + NUM_COLS * screen_y;
+    *(uint8_t*)(video_mem + (offset << 1)) = ' ';
+    *(uint8_t*)(video_mem + (offset << 1) + 1) = ATTRIB;
+}
+
+void newline(void) {
+    screen_x = 0;
+    ++screen_y;
+
+    if (screen_y == NUM_ROWS) {
+        --screen_y;
+        scroll();
+    }
+}
+
+void scroll(void) {
+    int32_t offset = NUM_COLS * (NUM_ROWS - 1);
+    memmove((uint8_t*)video_mem,
+            (uint8_t*)(video_mem + (NUM_COLS << 1)),
+            offset << 1);
+
+    int32_t i;
+    for (i = 0; i < NUM_COLS; ++i) {
+        *(uint8_t*)(video_mem + ((offset + i) << 1)) = ' ';
+        *(uint8_t*)(video_mem + ((offset + i) << 1) + 1) = ATTRIB;
+    }
+}
+
 void clear(void) {
+    screen_x = 0;
+    screen_y = 0;
+
     int32_t i;
     for (i = 0; i < NUM_ROWS * NUM_COLS; i++) {
         *(uint8_t*)(video_mem + (i << 1)) = ' ';
@@ -139,15 +174,19 @@ int32_t puts(int8_t* s) {
 
 void putc(uint8_t c) {
     if (c == '\n' || c == '\r') {
-        screen_y = (screen_y + 1) % NUM_ROWS;
-        screen_x = 0;
+        newline();
     } else {
         int32_t offset = screen_x + NUM_COLS * screen_y;
         *(uint8_t*)(video_mem + (offset << 1)) = c;
         *(uint8_t*)(video_mem + (offset << 1) + 1) = ATTRIB;
 
-        screen_y = (screen_y + (++screen_x / NUM_COLS)) % NUM_ROWS;
-        screen_x = screen_x % NUM_COLS;
+        screen_x = (screen_x + 1) % NUM_COLS;
+        screen_y = screen_y + !screen_x;
+
+        if (screen_y == NUM_ROWS) {
+            --screen_y;
+            scroll();
+        }
     }
 }
 
