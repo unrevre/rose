@@ -18,12 +18,24 @@ typedef struct {
 
 typedef struct {
     int8_t buffer[LINE_MAX];
-    uint32_t index;
+    int32_t index;
+} lbuf_t;
+
+typedef struct {
+    uint32_t status;
+    int32_t pid;
+    int32_t nproc;
+    lbuf_t line;
 } tty_t;
+
+#define TTY_MAX     4
+
+extern tty_t* tty0;
 
 void init_tty(void);
 
-void clear_tty(void);
+void start_tty(tty_t* tty);
+void clear_tty(tty_t* tty);
 
 void handle_event(uint32_t scancode);
 

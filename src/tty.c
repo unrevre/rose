@@ -1,6 +1,6 @@
 /*!
  * tty.c
- * @ Functions for managing tty and line discipline
+ * @ Functions for the virtual terminal/line discipline systems
  */
 
 #include "tty.h"
@@ -43,22 +43,38 @@ static uint8_t char_map[0x80] = {
 
 modifiers_t flags;
 
-tty_t tty0;
+tty_t ttys[TTY_MAX];
+tty_t* tty0;
 
 void init_tty(void) {
-    clear_tty();
-
     flags.ctrl = 0;
     flags.shift = 0;
     flags.capslock = 0;
+
+    int32_t i;
+    for (i = 0; i < TTY_MAX; ++i)
+        ttys[i].status = 0;
+
+    tty0 = ttys;
+    start_tty(tty0);
 }
 
-void clear_tty(void) {
-    tty0.index = 0;
-    memset(tty0.buffer, 0, LINE_MAX * sizeof(uint8_t));
+void start_tty(tty_t* tty) {
+    clear_tty(tty);
+
+    tty->status = 1;
+    tty->pid = 0;
+    tty->nproc = 0;
+}
+
+void clear_tty(tty_t* tty) {
+    tty->line.index = 0;
+    memset(tty->line.buffer, 0, LINE_MAX * sizeof(uint8_t));
 }
 
 void handle_event(uint32_t scancode) {
+    tty_t* tty = tty0;
+
     switch (scancode) {
         case KEY_DOWN_LEFT_CTRL:
         case KEY_DOWN_RIGHT_CTRL:
@@ -81,26 +97,26 @@ void handle_event(uint32_t scancode) {
             break;
         case KEY_DOWN_ENTER:
             newline();
-            clear_tty();
+            clear_tty(tty);
             break;
         case KEY_DOWN_BACKSPACE:
-            if (tty0.index) {
-                tty0.buffer[--tty0.index] = '\0';
+            if (tty->line.index) {
+                tty->line.buffer[--tty->line.index] = '\0';
                 backspace();
             }
             break;
     }
 
     if (scancode < 0x40 && char_map[scancode]) {
-        if (tty0.index == LINE_MAX) {
+        if (tty->line.index == LINE_MAX) {
             newline();
-            clear_tty();
+            clear_tty(tty);
         }
 
         if (flags.shift | flags.capslock)
             scancode += 0x40;
 
-        tty0.buffer[tty0.index] = char_map[scancode];
-        putc(tty0.buffer[tty0.index++]);
+        tty->line.buffer[tty->line.index] = char_map[scancode];
+        putc(tty->line.buffer[tty->line.index++]);
     }
 }
