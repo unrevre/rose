@@ -13,6 +13,8 @@ IMGDIR = ./img
 SRCDIR = ./src
 SCRDIR = ./scripts
 
+IMAGE = rose
+
 # boot.o must be first
 OBJS := $(BLDDIR)/boot.o
 OBJS += $(filter-out $(BLDDIR)/boot.o,\
@@ -20,10 +22,10 @@ OBJS += $(filter-out $(BLDDIR)/boot.o,\
 OBJS += $(patsubst $(SRCDIR)/%.c,$(BLDDIR)/%.o,$(filter %.c,$(SRCS)))
 DEPS := $(patsubst $(BLDDIR)/%.o,$(BLDDIR)/%.d,$(OBJS))
 
-all: mkdir bootimg
+all: mkdir rose
 
-bootimg: $(OBJS)
-	$(CC) $(LDFLAGS) $(OBJS) -Ttext=0x100000 -o $(IMGDIR)/bootimg
+rose: $(OBJS)
+	$(CC) $(LDFLAGS) $(OBJS) -Ttext=0x100000 -o $(IMGDIR)/$(IMAGE)
 
 $(BLDDIR)/%.o: $(SRCDIR)/%.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -MMD -c -o $@ $<
@@ -31,10 +33,10 @@ $(BLDDIR)/%.o: $(SRCDIR)/%.c
 $(BLDDIR)/%.o: $(SRCDIR)/%.S
 	$(CC) $(CPPFLAGS) $(ASFLAGS) -MMD -c -o $@ $<
 
-.PHONY: bootimg clean mkdir
+.PHONY: rose clean mkdir
 
 clean:
-	rm -f $(BLDDIR)/* $(IMGDIR)/bootimg
+	rm -f $(BLDDIR)/* $(IMGDIR)/$(IMAGE)
 
 mkdir:
 	@mkdir -p $(IMGDIR) $(BLDDIR)
