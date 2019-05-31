@@ -26,6 +26,7 @@ all: mkdir rose
 
 rose: $(OBJS)
 	$(CC) $(LDFLAGS) $(OBJS) -Ttext=0x100000 -o $(IMGDIR)/$(IMAGE)
+	$(SCRDIR)/makeimage.sh
 
 $(BLDDIR)/%.o: $(SRCDIR)/%.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -MMD -c -o $@ $<
