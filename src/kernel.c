@@ -3,6 +3,7 @@
  * @ C part of the kernel
  */
 
+#include "fsdef.h"
 #include "i8259.h"
 #include "idt.h"
 #include "lib.h"
@@ -147,6 +148,10 @@ void entry(uint32_t magic, uint32_t addr) {
     init_rtc();
 
     init_tty();
+
+    /* Assume filesystem is the first module */
+    if (CHECK_FLAG(mbi->flags, 3) && mbi->mods_count)
+        init_fs((fs_t*)((module_t*)mbi->mods_addr)->mod_start);
 
     /* Map kernel memory block (including video memory) */
     map_memory_block(VMEM_KERNEL, PMEM_KERNEL, SUPERVISOR);
