@@ -53,23 +53,19 @@ void init_tty(void) {
 
     int32_t i;
     for (i = 0; i < TTY_MAX; ++i)
-        ttys[i].status = 0;
+        ttys[i].status = TTY_IDLE;
 
     tty0 = ttys;
     start_tty(tty0);
 }
 
 void start_tty(tty_t* tty) {
-    clear_tty(tty);
-
-    tty->status = 1;
-    tty->pid = 0;
-    tty->nproc = 0;
-}
-
-void clear_tty(tty_t* tty) {
     tty->line.index = 0;
     memset(tty->line.buffer, 0, LINE_MAX * sizeof(uint8_t));
+
+    tty->status = TTY_ACTIVE;
+    tty->pid = 0;
+    tty->nproc = 0;
 }
 
 void handle_event(uint32_t scancode) {
@@ -96,8 +92,8 @@ void handle_event(uint32_t scancode) {
             flags.capslock ^= 0x1;
             break;
         case KEY_DOWN_ENTER:
+            tty->status |= TTY_READ;
             newline();
-            clear_tty(tty);
             break;
         case KEY_DOWN_BACKSPACE:
             if (tty->line.index) {
@@ -109,8 +105,8 @@ void handle_event(uint32_t scancode) {
 
     if (scancode < 0x40 && char_map[scancode]) {
         if (tty->line.index == LINE_MAX) {
+            tty->status |= TTY_READ;
             newline();
-            clear_tty(tty);
         }
 
         if (flags.shift | flags.capslock)
@@ -119,4 +115,43 @@ void handle_event(uint32_t scancode) {
         tty->line.buffer[tty->line.index] = char_map[scancode];
         putc(tty->line.buffer[tty->line.index++]);
     }
+}
+
+/* File operations (tty) */
+
+int32_t tty_read(int32_t fd, int8_t* buf, int32_t nbytes) {
+    while (!(tty0->status & TTY_READ));
+
+    uint32_t length = strlen(tty0->line.buffer);
+    if (length > nbytes)
+        length = nbytes;
+
+    strncpy(buf, tty0->line.buffer, length);
+
+    cli();
+    memmove(tty0->line.buffer, tty0->line.buffer + length,
+            LINE_MAX - length);
+    memset(tty0->line.buffer + LINE_MAX - length, '\0', length);
+    tty0->line.index = tty0->line.index - length;
+
+    tty0->status &= ~TTY_READ;
+    sti();
+
+    return length;
+}
+
+int32_t tty_write(const int8_t* buf, int32_t nbytes) {
+    int32_t i;
+    for (i = 0; i < nbytes; ++i)
+        putc(buf[i]);
+
+    return nbytes;
+}
+
+int32_t tty_open(void) {
+    return 0;
+}
+
+int32_t tty_close(void) {
+    return 0;
 }
