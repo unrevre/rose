@@ -43,4 +43,7 @@ typedef struct {
 
 void init_fs(fs_t* address);
 
+int32_t read_data(int32_t inode, int32_t offset, int8_t* buf, int32_t nbytes);
+int32_t query_inode(const int8_t* fname);
+
 #endif /* FSDEF_H */
