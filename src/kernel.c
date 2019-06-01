@@ -3,6 +3,7 @@
  * @ C part of the kernel
  */
 
+#include "fd.h"
 #include "fsdef.h"
 #include "i8259.h"
 #include "idt.h"
@@ -150,6 +151,7 @@ void entry(uint32_t magic, uint32_t addr) {
 
     init_tty();
 
+    init_fd();
     init_pcb();
 
     /* Assume filesystem is the first module */

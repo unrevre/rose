@@ -6,7 +6,11 @@
 #ifndef PROCESS_H
 #define PROCESS_H
 
+#include "fd.h"
 #include "types.h"
+
+#define FD_INV      -1
+#define FD_MAX      8
 
 typedef struct pcb_t pcb_t;
 
@@ -17,6 +21,7 @@ struct pcb_t {
     uint32_t ebp;
     uint32_t retaddr;
     pcb_t* parent;
+    fd_t fds[FD_MAX];
 };
 
 #define PROC_BASE   (KERNEL_BASE - STACK_SIZE)
