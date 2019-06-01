@@ -11,6 +11,7 @@
 #include "multiboot.h"
 #include "page.h"
 #include "pit.h"
+#include "process.h"
 #include "rtc.h"
 #include "tty.h"
 #include "types.h"
@@ -148,6 +149,8 @@ void entry(uint32_t magic, uint32_t addr) {
     init_rtc();
 
     init_tty();
+
+    init_pcb();
 
     /* Assume filesystem is the first module */
     if (CHECK_FLAG(mbi->flags, 3) && mbi->mods_count)
