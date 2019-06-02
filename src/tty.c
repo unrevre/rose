@@ -122,10 +122,7 @@ void handle_event(uint32_t scancode) {
 int32_t tty_read(int32_t fd, int8_t* buf, int32_t nbytes) {
     while (!(tty0->status & TTY_READ));
 
-    uint32_t length = strlen(tty0->line.buffer);
-    if (length > nbytes)
-        length = nbytes;
-
+    int32_t length = strnlen(tty0->line.buffer, nbytes);
     strncpy(buf, tty0->line.buffer, length);
 
     cli();

@@ -65,7 +65,7 @@ int32_t dir_read(int32_t fd, int8_t* buf, int32_t nbytes) {
     ++proc0->fds[fd].fpos;
     strncpy(buf, fs->boot.dentries[dentry].fname, nbytes);
 
-    return strlen(buf);
+    return strnlen(buf, nbytes);
 }
 
 int32_t dir_write(const int8_t* buf, int32_t nbytes) {
