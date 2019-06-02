@@ -397,12 +397,21 @@ void* memmove(void* dest, const void* src, uint32_t n) {
 }
 
 /* String length */
-uint32_t strlen(const int8_t* s) {
-    register uint32_t len = 0;
-    while (s[len] != '\0')
-        len++;
+int32_t strlen(const int8_t* s) {
+    int32_t i = 0;
+    while (s[i] != '\0')
+        i++;
 
-    return len;
+    return i;
+}
+
+/* Standard strnlen */
+int32_t strnlen(const int8_t* s, uint32_t n) {
+    int32_t i = 0;
+    while (s[i] != '\0' && i < n)
+        i++;
+
+    return i;
 }
 
 /* Standard strncmp */
@@ -414,18 +423,6 @@ int32_t strncmp(const int8_t* s1, const int8_t* s2, uint32_t n) {
     }
 
     return 0;
-}
-
-/* Standard strcpy */
-int8_t* strcpy(int8_t* dest, const int8_t* src) {
-    int32_t i = 0;
-    while (src[i] != '\0') {
-        dest[i] = src[i];
-        i++;
-    }
-
-    dest[i] = '\0';
-    return dest;
 }
 
 /* Standard strncpy */
