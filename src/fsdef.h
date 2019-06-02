@@ -46,4 +46,18 @@ void init_fs(fs_t* address);
 int32_t read_data(int32_t inode, int32_t offset, int8_t* buf, int32_t nbytes);
 int32_t query_inode(const int8_t* fname);
 
+/* File operations (directory) */
+
+int32_t dir_read(int32_t fd, int8_t* buf, int32_t nbytes);
+int32_t dir_write(const int8_t* buf, int32_t nbytes);
+int32_t dir_open(void);
+int32_t dir_close(void);
+
+/* File operations (file) */
+
+int32_t file_read(int32_t fd, int8_t* buf, int32_t nbytes);
+int32_t file_write(const int8_t* buf, int32_t nbytes);
+int32_t file_open(void);
+int32_t file_close(void);
+
 #endif /* FSDEF_H */

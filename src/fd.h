@@ -16,6 +16,8 @@ typedef struct {
 } fops_t;
 
 extern fops_t tty_fops;
+extern fops_t dir_fops;
+extern fops_t file_fops;
 
 typedef struct {
     uint32_t inode;
