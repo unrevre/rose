@@ -134,11 +134,23 @@ int32_t execute(const int8_t* command) {
 }
 
 int32_t read(int32_t fd, void* buf, int32_t nbytes) {
-    return 0;
+    if (fd >= FD_MAX)
+        return -1;
+
+    if (!(proc0->fds[fd].flags & FD_READ))
+        return -1;
+
+    return proc0->fds[fd].fops->read(fd, buf, nbytes);
 }
 
 int32_t write(int32_t fd, const void* buf, int32_t nbytes) {
-    return 0;
+    if (fd >= FD_MAX)
+        return -1;
+
+    if (!(proc0->fds[fd].flags & FD_WRITE))
+        return -1;
+
+    return proc0->fds[fd].fops->write(buf, nbytes);
 }
 
 int32_t open(const int8_t* fname) {
