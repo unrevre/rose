@@ -154,9 +154,54 @@ int32_t write(int32_t fd, const void* buf, int32_t nbytes) {
 }
 
 int32_t open(const int8_t* fname) {
-    return 0;
+    dentry_t* dentry = query_dentry(fname);
+    if (dentry == 0)
+        return -1;
+
+    int32_t fd;
+    for (fd = 2; fd < FD_MAX; ++fd) {
+        if (proc0->fds[fd].flags == FD_CLOSE) {
+            proc0->fds[fd].flags = FD_OPEN;
+            break;
+        }
+    }
+
+    if (fd == FD_MAX)
+        return -1;
+
+    switch (dentry->ftype) {
+        case 0:
+            /* RTC file */
+            break;
+        case 1:
+            proc0->fds[fd].flags = FD_OPEN | FD_READ;
+            proc0->fds[fd].fops = &dir_fops;
+            break;
+        case 2:
+            proc0->fds[fd].flags = FD_OPEN | FD_READ;
+            proc0->fds[fd].fops = &file_fops;
+            break;
+        default:
+            return -1;
+    }
+
+    proc0->fds[fd].inode = dentry->inode;
+    proc0->fds[fd].fpos = 0;
+
+    proc0->fds[fd].fops->open();
+
+    return fd;
 }
 
 int32_t close(int32_t fd) {
+    if (fd >= FD_MAX)
+        return -1;
+
+    if (!(proc0->fds[fd].flags & FD_OPEN))
+        return -1;
+
+    proc0->fds[fd].fops->close();
+    proc0->fds[fd].flags = FD_CLOSE;
+
     return 0;
 }

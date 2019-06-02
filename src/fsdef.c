@@ -55,6 +55,16 @@ int32_t query_inode(const int8_t* fname) {
     return -1;
 }
 
+dentry_t* query_dentry(const int8_t* fname) {
+    int32_t i;
+    for (i = 0; i < 63; ++i) {
+        if (!strncmp(fname, fs->boot.dentries[i].fname, 32))
+            return &fs->boot.dentries[i];
+    }
+
+    return 0;
+}
+
 /* File operations (directory) */
 
 int32_t dir_read(int32_t fd, int8_t* buf, int32_t nbytes) {
