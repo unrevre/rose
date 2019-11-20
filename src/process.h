@@ -20,6 +20,7 @@ struct pcb_t {
     uint32_t esp;
     uint32_t ebp;
     uint32_t retaddr;
+    int8_t args[64];
     pcb_t* parent;
     fd_t fds[FD_MAX];
 };

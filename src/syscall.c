@@ -56,8 +56,20 @@ int32_t halt(uint8_t status) {
 }
 
 int32_t execute(const int8_t* command) {
+    int8_t binary[64];
+    strncpy(binary, command, 64);
+    binary[63] = '\0';
+
+    int32_t i;
+    for (i = 0; i < 63; ++i) {
+        if (binary[i] == ' ' || binary[i] == '\0') {
+            binary[i++] = '\0';
+            break;
+        }
+    }
+
     int32_t inode;
-    inode = query_inode(command);
+    inode = query_inode(binary);
     if (inode == -1)
         return -1;
 
@@ -92,10 +104,11 @@ int32_t execute(const int8_t* command) {
                    "=rm" (process->retaddr)
                 );
 
+    strncpy(process->args, command + i, 64 - i);
+
     process->fds[0] = stdin;
     process->fds[1] = stdout;
 
-    int32_t i;
     for (i = 2; i < FD_MAX; ++i)
         process->fds[i].flags = FD_CLOSE;
 
@@ -208,7 +221,12 @@ int32_t close(int32_t fd) {
 }
 
 int32_t getargs(int8_t* buf, int32_t nbytes) {
-    return -1;
+    if (strnlen(proc0->args, 64) > nbytes)
+        return -1;
+
+    strncpy(buf, proc0->args, nbytes);
+
+    return 0;
 }
 
 int32_t vidmap(uint8_t** address) {
