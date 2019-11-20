@@ -92,7 +92,7 @@ HANDLE_NULL pit
 HANDLE_NULL kbd
 HANDLE_NULL rtc
 
-#define NSYS 6
+#define NSYS 0xA
 
 syscall:
     decl    %eax
@@ -128,3 +128,7 @@ call_vector:
 .long   write
 .long   open
 .long   close
+.long   getargs
+.long   vidmap
+.long   signal
+.long   sigreturn

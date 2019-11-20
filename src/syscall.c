@@ -206,3 +206,19 @@ int32_t close(int32_t fd) {
 
     return 0;
 }
+
+int32_t getargs(int8_t* buf, int32_t nbytes) {
+    return -1;
+}
+
+int32_t vidmap(uint8_t** address) {
+    return -1;
+}
+
+int32_t signal(int32_t signum, void* handler) {
+    return -1;
+}
+
+int32_t sigreturn(void) {
+    return -1;
+}
