@@ -30,6 +30,7 @@
 
 .macro HANDLE_NULL INT
 \INT :
+    pushl   $0
     pushl   %eax
     pushl   %ebp
     pushl   %edi
@@ -45,6 +46,7 @@
     popl    %edi
     popl    %ebp
     popl    %eax
+    addl    $4, %esp
     iret
 .endm
 
@@ -99,6 +101,7 @@ syscall:
     cmpl    $NSYS, %eax
     jae     invalid_call
 
+    pushl   $0
     pushl   %eax
     pushl   %ebp
     pushl   %edi
@@ -113,7 +116,7 @@ syscall:
     popl    %esi
     popl    %edi
     popl    %ebp
-    addl    $4, %esp
+    addl    $8, %esp
     iret
 
 invalid_call:
