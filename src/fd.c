@@ -6,8 +6,10 @@
 #include "fd.h"
 
 #include "fsdef.h"
+#include "rtc.h"
 #include "tty.h"
 
+fops_t rtc_fops;
 fops_t tty_fops;
 fops_t dir_fops;
 fops_t file_fops;
@@ -16,6 +18,11 @@ fd_t stdin;
 fd_t stdout;
 
 void init_fd(void) {
+    rtc_fops.read = &rtc_read;
+    rtc_fops.write = &rtc_write;
+    rtc_fops.open = &rtc_open;
+    rtc_fops.close = &rtc_close;
+
     tty_fops.read = &tty_read;
     tty_fops.write = &tty_write;
     tty_fops.open = &tty_open;

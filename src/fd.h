@@ -15,6 +15,7 @@ typedef struct {
     int32_t (*close)(void);
 } fops_t;
 
+extern fops_t rtc_fops;
 extern fops_t tty_fops;
 extern fops_t dir_fops;
 extern fops_t file_fops;

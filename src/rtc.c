@@ -29,3 +29,19 @@ void handle_rtc(void) {
 
     sti();
 }
+
+int32_t rtc_read(int32_t fd, int8_t* buf, int32_t nbytes) {
+    return -1;
+}
+
+int32_t rtc_write(const int8_t* buf, int32_t nbytes) {
+    return -1;
+}
+
+int32_t rtc_open(void) {
+    return -1;
+}
+
+int32_t rtc_close(void) {
+    return -1;
+}

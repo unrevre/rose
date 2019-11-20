@@ -171,7 +171,8 @@ int32_t open(const int8_t* fname) {
 
     switch (dentry->ftype) {
         case 0:
-            /* RTC file */
+            proc0->fds[fd].flags = FD_OPEN | FD_READ | FD_WRITE;
+            proc0->fds[fd].fops = &rtc_fops;
             break;
         case 1:
             proc0->fds[fd].flags = FD_OPEN | FD_READ;
