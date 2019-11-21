@@ -28,6 +28,7 @@ typedef struct {
 void init_rtc(void);
 
 void handle_rtc(void);
+int32_t set_rtc_frequency(uint32_t frequency);
 
 int32_t rtc_read(int32_t fd, int8_t* buf, int32_t nbytes);
 int32_t rtc_write(const int8_t* buf, int32_t nbytes);

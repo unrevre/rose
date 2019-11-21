@@ -30,12 +30,37 @@ void handle_rtc(void) {
     sti();
 }
 
+int32_t set_rtc_frequency(uint32_t frequency) {
+    if (frequency & (frequency - 1))
+        return -1;
+
+    /* Allowed frequency range: 2 - 1024 Hz */
+    if (frequency & 0xFFFFF801)
+        return -1;
+
+    uint32_t rate = 0x6;
+    while (frequency << rate != 0x10000)
+        ++rate;
+
+    cli();
+
+    uint8_t prev;
+    outb(RTC_SREG_A, RTC_SREG_PORT);
+    prev = inb(RTC_DATA_PORT);
+    outb(RTC_SREG_A, RTC_SREG_PORT);
+    outb((prev & 0xF0) | rate, RTC_DATA_PORT);
+
+    sti();
+
+    return 0;
+}
+
 int32_t rtc_read(int32_t fd, int8_t* buf, int32_t nbytes) {
     return -1;
 }
 
 int32_t rtc_write(const int8_t* buf, int32_t nbytes) {
-    return -1;
+    return set_rtc_frequency(*(uint32_t*)buf);
 }
 
 int32_t rtc_open(void) {
