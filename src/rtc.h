@@ -25,6 +25,10 @@ typedef struct {
     uint8_t century;
 } time_t;
 
+#define RTC_IDLE        0
+#define RTC_OPEN        1
+#define RTC_WAIT        2
+
 void init_rtc(void);
 
 void handle_rtc(void);

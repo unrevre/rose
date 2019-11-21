@@ -8,6 +8,8 @@
 #include "i8259.h"
 #include "lib.h"
 
+volatile uint32_t rtc_flag;
+
 void init_rtc(void) {
     cli();
 
@@ -18,6 +20,8 @@ void init_rtc(void) {
     outb(prev | 0x40, RTC_DATA_PORT);
 
     sti();
+
+    rtc_flag = RTC_OPEN;
 }
 
 void handle_rtc(void) {
@@ -26,6 +30,8 @@ void handle_rtc(void) {
 
     outb(RTC_SREG_C, RTC_SREG_PORT);
     inb(RTC_DATA_PORT);
+
+    rtc_flag &= ~RTC_WAIT;
 
     sti();
 }
@@ -56,17 +62,32 @@ int32_t set_rtc_frequency(uint32_t frequency) {
 }
 
 int32_t rtc_read(int32_t fd, int8_t* buf, int32_t nbytes) {
-    return -1;
+    if (!(rtc_flag & RTC_OPEN))
+        return -1;
+
+    rtc_flag |= RTC_WAIT;
+    while (rtc_flag & RTC_WAIT);
+
+    return 0;
 }
 
 int32_t rtc_write(const int8_t* buf, int32_t nbytes) {
+    if (!(rtc_flag & RTC_OPEN))
+        return -1;
+
     return set_rtc_frequency(*(uint32_t*)buf);
 }
 
 int32_t rtc_open(void) {
-    return -1;
+    if (!(rtc_flag & RTC_OPEN))
+        return -1;
+
+    return 0;
 }
 
 int32_t rtc_close(void) {
-    return -1;
+    if (!(rtc_flag & RTC_OPEN))
+        return -1;
+
+    return 0;
 }
