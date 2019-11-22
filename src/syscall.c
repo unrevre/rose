@@ -106,6 +106,10 @@ int32_t execute(const int8_t* command) {
 
     strncpy(process->args, command + i, 64 - i);
 
+    process->sigmask = 0;
+    process->signum = 0;
+    memset(process->sighandle, 0, NSIG * sizeof(int32_t*));
+
     process->fds[0] = stdin;
     process->fds[1] = stdout;
 

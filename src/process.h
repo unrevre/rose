@@ -7,6 +7,7 @@
 #define PROCESS_H
 
 #include "fd.h"
+#include "signal.h"
 #include "types.h"
 
 #define FD_INV      -1
@@ -21,6 +22,9 @@ struct pcb_t {
     uint32_t ebp;
     uint32_t retaddr;
     int8_t args[64];
+    uint32_t sigmask;
+    uint32_t signum;
+    int32_t* sighandle[NSIG];
     pcb_t* parent;
     fd_t fds[FD_MAX];
 };
