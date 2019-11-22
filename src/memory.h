@@ -28,10 +28,14 @@
 
 #define KERNEL_BASE         (VMEM_KERNEL + BLOCK_4MB)
 
+#ifndef ASM
+
 void map_memory_block(uint32_t virtual, uint32_t physical,
                       uint32_t user_supervisor);
 
 void map_memory_page(uint32_t virtual, uint32_t physical,
                      uint32_t user_supervisor, PTE_t* page_table);
+
+#endif /* ASM */
 
 #endif /* MEMORY_H */

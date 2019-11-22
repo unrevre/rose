@@ -8,6 +8,8 @@
 
 #include "types.h"
 
+#ifndef ASM
+
 typedef struct {
     uint32_t present : 1;
     uint32_t read_write : 1;
@@ -44,5 +46,7 @@ PTE_t page_table_user[1024];
 void init_paging(PDE_t* address);
 void enable_paging(void);
 void disable_paging(void);
+
+#endif /* ASM */
 
 #endif /* PAGE_H */
