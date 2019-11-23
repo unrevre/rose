@@ -238,9 +238,30 @@ int32_t vidmap(uint8_t** address) {
 }
 
 int32_t signal(int32_t signum, void* handler) {
-    return -1;
+    if (!signum || signum >= NSIG)
+        return -1;
+
+    proc0->sighandle[signum] = handler;
+
+    return 0;
 }
 
 int32_t sigreturn(void) {
-    return -1;
+    int32_t retval;
+    asm volatile("                          \n\
+                 movl   52(%%ebp), %%edx    \n\
+                 leal   4(%%edx), %%ecx     \n\
+                 leal   8(%%ebp), %%eax     \n\
+                 pushl  $0x34               \n\
+                 pushl  %%ecx               \n\
+                 pushl  %%eax               \n\
+                 call   memcpy              \n\
+                 movl   32(%%ebp), %0       \n\
+                 "
+                 : "=r" (retval)
+                 :
+                 : "eax", "ecx", "edx"
+                );
+
+    return retval;
 }
