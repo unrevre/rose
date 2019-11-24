@@ -68,11 +68,13 @@ dentry_t* query_dentry(const int8_t* fname) {
 /* File operations (directory) */
 
 int32_t dir_read(int32_t fd, int8_t* buf, int32_t nbytes) {
-    int32_t dentry = proc0->fds[fd].fpos;
+    pcb_t* process = proc0;
+
+    int32_t dentry = process->fds[fd].fpos;
     if (dentry == fs->boot.ndentry)
         return 0;
 
-    ++proc0->fds[fd].fpos;
+    ++process->fds[fd].fpos;
     strncpy(buf, fs->boot.dentries[dentry].fname, nbytes);
 
     return strnlen(buf, nbytes);
@@ -93,11 +95,13 @@ int32_t dir_close(void) {
 /* File operations (file) */
 
 int32_t file_read(int32_t fd, int8_t* buf, int32_t nbytes) {
-    int32_t inode = proc0->fds[fd].inode;
-    int32_t offset = proc0->fds[fd].fpos;
+    pcb_t* process = proc0;
+
+    int32_t inode = process->fds[fd].inode;
+    int32_t offset = process->fds[fd].fpos;
 
     int32_t length = read_data(inode, offset, buf, nbytes);;
-    proc0->fds[fd].fpos = offset + length;
+    process->fds[fd].fpos = offset + length;
 
     return length;
 }

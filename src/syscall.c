@@ -19,15 +19,15 @@ int32_t halt(uint8_t status) {
     cli();
 
     pcb_t* process = proc0;
+    pcb_t* parent = process->parent;
 
-    proc0->state = PROC_IDLE;
-    proc0 = proc0->parent;
+    process->state = PROC_IDLE;
 
     tty0->nproc--;
 
-    if (proc0 != 0) {
-        int32_t pid = proc0->pid;
-        proc0->state = PROC_ACTIVE;
+    if (parent != 0) {
+        int32_t pid = parent->pid;
+        parent->state = PROC_ACTIVE;
 
         disable_paging();
         map_memory_block(VMEM_USER, PMEM_USER + pid * BLOCK_4MB, USER);
@@ -35,6 +35,8 @@ int32_t halt(uint8_t status) {
 
         tss.esp0 = KERNEL_BASE - pid * STACK_SIZE;
     }
+
+    proc0 = parent;
 
     sti();
 
@@ -86,12 +88,13 @@ int32_t execute(const int8_t* command) {
 
     cli();
 
+    pcb_t* parent = proc0;
     pcb_t* process = pcb[pid];
-    process->parent = proc0;
+
+    process->parent = parent;
     process->pid = pid;
     process->state = PROC_ACTIVE;
 
-    proc0 = process;
     tty0->nproc++;
 
     asm volatile("                      \n\
@@ -119,6 +122,8 @@ int32_t execute(const int8_t* command) {
     disable_paging();
     map_memory_block(VMEM_USER, PMEM_USER + pid * BLOCK_4MB, USER);
     enable_paging();
+
+    proc0 = process;
 
     sti();
 
@@ -154,20 +159,24 @@ int32_t read(int32_t fd, void* buf, int32_t nbytes) {
     if (fd >= FD_MAX)
         return -1;
 
-    if (!(proc0->fds[fd].flags & FD_READ))
+    pcb_t* process = proc0;
+
+    if (!(process->fds[fd].flags & FD_READ))
         return -1;
 
-    return proc0->fds[fd].fops->read(fd, buf, nbytes);
+    return process->fds[fd].fops->read(fd, buf, nbytes);
 }
 
 int32_t write(int32_t fd, const void* buf, int32_t nbytes) {
     if (fd >= FD_MAX)
         return -1;
 
-    if (!(proc0->fds[fd].flags & FD_WRITE))
+    pcb_t* process = proc0;
+
+    if (!(process->fds[fd].flags & FD_WRITE))
         return -1;
 
-    return proc0->fds[fd].fops->write(buf, nbytes);
+    return process->fds[fd].fops->write(buf, nbytes);
 }
 
 int32_t open(const int8_t* fname) {
@@ -175,10 +184,12 @@ int32_t open(const int8_t* fname) {
     if (dentry == 0)
         return -1;
 
+    pcb_t* process = proc0;
+
     int32_t fd;
     for (fd = 2; fd < FD_MAX; ++fd) {
-        if (proc0->fds[fd].flags == FD_CLOSE) {
-            proc0->fds[fd].flags = FD_OPEN;
+        if (process->fds[fd].flags == FD_CLOSE) {
+            process->fds[fd].flags = FD_OPEN;
             break;
         }
     }
@@ -188,25 +199,25 @@ int32_t open(const int8_t* fname) {
 
     switch (dentry->ftype) {
         case 0:
-            proc0->fds[fd].flags = FD_OPEN | FD_READ | FD_WRITE;
-            proc0->fds[fd].fops = &rtc_fops;
+            process->fds[fd].flags = FD_OPEN | FD_READ | FD_WRITE;
+            process->fds[fd].fops = &rtc_fops;
             break;
         case 1:
-            proc0->fds[fd].flags = FD_OPEN | FD_READ;
-            proc0->fds[fd].fops = &dir_fops;
+            process->fds[fd].flags = FD_OPEN | FD_READ;
+            process->fds[fd].fops = &dir_fops;
             break;
         case 2:
-            proc0->fds[fd].flags = FD_OPEN | FD_READ;
-            proc0->fds[fd].fops = &file_fops;
+            process->fds[fd].flags = FD_OPEN | FD_READ;
+            process->fds[fd].fops = &file_fops;
             break;
         default:
             return -1;
     }
 
-    proc0->fds[fd].inode = dentry->inode;
-    proc0->fds[fd].fpos = 0;
+    process->fds[fd].inode = dentry->inode;
+    process->fds[fd].fpos = 0;
 
-    proc0->fds[fd].fops->open();
+    process->fds[fd].fops->open();
 
     return fd;
 }
@@ -215,20 +226,24 @@ int32_t close(int32_t fd) {
     if (fd >= FD_MAX)
         return -1;
 
-    if (!(proc0->fds[fd].flags & FD_OPEN))
+    pcb_t* process = proc0;
+
+    if (!(process->fds[fd].flags & FD_OPEN))
         return -1;
 
-    proc0->fds[fd].fops->close();
-    proc0->fds[fd].flags = FD_CLOSE;
+    process->fds[fd].fops->close();
+    process->fds[fd].flags = FD_CLOSE;
 
     return 0;
 }
 
 int32_t getargs(int8_t* buf, int32_t nbytes) {
-    if (strnlen(proc0->args, 64) > nbytes)
+    pcb_t* process = proc0;
+
+    if (strnlen(process->args, 64) > nbytes)
         return -1;
 
-    strncpy(buf, proc0->args, nbytes);
+    strncpy(buf, process->args, nbytes);
 
     return 0;
 }
