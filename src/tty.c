@@ -6,6 +6,7 @@
 #include "tty.h"
 
 #include "lib.h"
+#include "signal.h"
 
 #define KEY_DOWN_LEFT_CTRL      0x1D
 #define KEY_UP_LEFT_CTRL        0x9D
@@ -21,6 +22,8 @@
 
 #define KEY_DOWN_ENTER          0x1C
 #define KEY_DOWN_BACKSPACE      0x0E
+
+#define KEY_DOWN_C              0x2E
 
 static uint8_t char_map[0x80] = {
     0x00, 0x00, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36,
@@ -70,6 +73,14 @@ void start_tty(tty_t* tty) {
 
 void handle_event(uint32_t scancode) {
     tty_t* tty = tty0;
+
+    if (flags.ctrl) {
+        switch (scancode) {
+            case KEY_DOWN_C:
+                queue_signal(SIGINT);
+                return;
+        }
+    }
 
     switch (scancode) {
         case KEY_DOWN_LEFT_CTRL:
