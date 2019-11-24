@@ -48,10 +48,11 @@ int32_t halt(uint8_t status) {
                  jmp    halt_process        \n\
                  "
                  :
-                 : "r" (status),
-                   "r" (process->esp),
-                   "r" (process->ebp),
-                   "r" (process->retaddr)
+                 : "rm" (status),
+                   "rm" (process->esp),
+                   "rm" (process->ebp),
+                   "rm" (process->retaddr)
+                 : "eax"
                 );
 
     return 0;
@@ -274,8 +275,6 @@ int32_t sigreturn(void) {
                  movl   32(%%ebp), %0       \n\
                  "
                  : "=r" (retval)
-                 :
-                 : "eax", "ecx", "edx"
                 );
 
     return retval;
