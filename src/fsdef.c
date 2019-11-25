@@ -46,6 +46,9 @@ int32_t read_data(int32_t inode, int32_t offset, int8_t* buf, int32_t nbytes) {
 }
 
 int32_t query_inode(const int8_t* fname) {
+    if (fname[0] == '\0')
+        return -1;
+
     int32_t i;
     for (i = 0; i < 63; ++i) {
         if (!strncmp(fname, fs->boot.dentries[i].fname, 32))
@@ -56,6 +59,9 @@ int32_t query_inode(const int8_t* fname) {
 }
 
 dentry_t* query_dentry(const int8_t* fname) {
+    if (fname[0] == '\0')
+        return 0;
+
     int32_t i;
     for (i = 0; i < 63; ++i) {
         if (!strncmp(fname, fs->boot.dentries[i].fname, 32))
