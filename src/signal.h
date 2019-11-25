@@ -3,15 +3,14 @@
 
 #include "types.h"
 
-#define SIGNONE 0
-#define SIGINT  1
-#define SIGILL  2
-#define SIGFPE  3
-#define SIGSEGV 4
-#define SIGALRM 5
-#define SIGUSR1 6
-#define SIGUSR2 7
-#define NSIG    8
+#define SIGINT  0
+#define SIGILL  1
+#define SIGFPE  2
+#define SIGSEGV 3
+#define SIGALRM 4
+#define SIGUSR1 5
+#define SIGUSR2 6
+#define NSIG    7
 
 void queue_signal(uint32_t signum);
 void deliver_signal(void);

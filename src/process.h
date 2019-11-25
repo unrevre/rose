@@ -23,7 +23,7 @@ struct pcb_t {
     uint32_t retaddr;
     int8_t args[64];
     uint32_t sigmask;
-    uint32_t signum;
+    uint32_t sigqueue;
     int32_t* sighandle[NSIG];
     pcb_t* parent;
     fd_t fds[FD_MAX];

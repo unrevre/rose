@@ -111,7 +111,7 @@ int32_t execute(const int8_t* command) {
     strncpy(process->args, command + i, 64 - i);
 
     process->sigmask = 0;
-    process->signum = 0;
+    process->sigqueue = 0;
     memset(process->sighandle, 0, NSIG * sizeof(int32_t*));
 
     process->fds[0] = stdin;
@@ -254,7 +254,7 @@ int32_t vidmap(uint8_t** address) {
 }
 
 int32_t signal(int32_t signum, void* handler) {
-    if (!signum || signum >= NSIG)
+    if (signum >= NSIG)
         return -1;
 
     proc0->sighandle[signum] = handler;

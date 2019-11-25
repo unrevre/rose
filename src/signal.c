@@ -5,23 +5,32 @@
 #include "syscall.h"
 
 void queue_signal(uint32_t signum) {
-    pcb_t* process = proc0;
-
-    if (process->sigmask)
-        return;
-
     if (signum >= NSIG)
         return;
 
-    process->signum = signum;
+    pcb_t* process = proc0;
+
+    uint32_t signal = 0x1 << signum;
+    if (process->sigmask & signal)
+        return;
+
+    process->sigqueue |= signal;
 }
 
 void deliver_signal(void) {
     pcb_t* process = proc0;
+    uint32_t sigqueue = process->sigqueue;
 
-    process->sigmask = 1;
+    if (!sigqueue)
+        return;
 
-    uint32_t signum = process->signum;
+    uint32_t sigmask = process->sigmask;
+    process->sigmask = 0xFFFFFFFF;
+
+    uint32_t signum = 0;
+    for (signum = 0; !(sigqueue & 0x1); ++signum)
+        sigqueue >>= 1;
+
     int32_t* handler = process->sighandle[signum];
 
     if (!handler) {
@@ -73,6 +82,6 @@ void deliver_signal(void) {
                  : "eax", "ecx", "edx"
                 );
 
-    process->sigmask = 0;
-    process->signum = SIGNONE;
+    process->sigmask = sigmask;
+    process->sigqueue &= ~(0x1 << signum);
 }
