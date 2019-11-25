@@ -250,7 +250,14 @@ int32_t getargs(int8_t* buf, int32_t nbytes) {
 }
 
 int32_t vidmap(uint8_t** address) {
-    return -1;
+    uint32_t value = (uint32_t)address;
+    if (value < VMEM_USER || value >= VMEM_USER + BLOCK_4MB)
+        return -1;
+
+    map_memory_page(VMEM_VIDEO_USER, PMEM_VIDEO, USER, page_table_user);
+    *address = (uint8_t*)VMEM_VIDEO_USER;
+
+    return 0;
 }
 
 int32_t signal(int32_t signum, void* handler) {

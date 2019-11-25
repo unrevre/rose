@@ -11,6 +11,7 @@
 
 #define PMEM_VIDEO          0xB8000
 #define VMEM_VIDEO          0xB8000
+#define VMEM_VIDEO_USER     0x8400000
 
 #define PMEM_KERNEL         0x0
 #define VMEM_KERNEL         0x0
