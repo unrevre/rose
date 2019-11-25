@@ -77,17 +77,22 @@ void init_tty(void) {
     for (i = 0; i < TTY_MAX; ++i)
         ttys[i].status = TTY_IDLE;
 
-    tty0 = ttys;
-    start_tty(tty0);
+    tty0 = &ttys[0];
 }
 
-void start_tty(tty_t* tty) {
-    tty->line.index = 0;
-    memset(tty->line.buffer, 0, LINE_MAX * sizeof(uint8_t));
+void start_tty(int32_t index) {
+    tty_t* tty = &ttys[index];
 
-    tty->status = TTY_ACTIVE;
-    tty->pid = 0;
-    tty->nproc = 0;
+    if (tty->status == TTY_IDLE) {
+        tty->line.index = 0;
+        memset(tty->line.buffer, 0, LINE_MAX * sizeof(uint8_t));
+
+        tty->status = TTY_ACTIVE;
+        tty->pid = 0;
+        tty->nproc = 0;
+    }
+
+    tty0 = tty;
 }
 
 void handle_event(uint32_t scancode) {

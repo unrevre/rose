@@ -31,13 +31,14 @@ typedef struct {
 #define TTY_IDLE    0
 #define TTY_ACTIVE  1
 #define TTY_READ    2
+
 #define TTY_MAX     4
 
 extern tty_t* tty0;
 
 void init_tty(void);
 
-void start_tty(tty_t* tty);
+void start_tty(int32_t index);
 
 void handle_event(uint32_t scancode);
 

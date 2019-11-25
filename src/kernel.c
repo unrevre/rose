@@ -175,7 +175,8 @@ void entry(uint32_t magic, uint32_t addr) {
     printf("Enabling Interrupts\n");
     sti();
 
-    /* Execute the first program (`shell') ... */
+    /* Initialise terminal */
+    start_tty(0);
 
     /* Spin (nicely, to not chew up cycles) */
     asm volatile(".1: hlt; jmp .1;");
