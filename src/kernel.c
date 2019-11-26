@@ -159,6 +159,7 @@ void entry(uint32_t magic, uint32_t addr) {
         init_fs((fs_t*)((module_t*)mbi->mods_addr)->mod_start);
 
     /* Map kernel memory block (including video memory) */
+    map_memory_page(VMEM_VIDEO, PMEM_VIDEO, SUPERVISOR, page_table_kernel);
     map_memory_block(VMEM_KERNEL, PMEM_KERNEL, SUPERVISOR);
 
     /* Enable paging */

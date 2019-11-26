@@ -5,7 +5,8 @@
 
 #include "lib.h"
 
-#define VIDEO       0xB8000
+#include "memory.h"
+
 #define NUM_COLS    80
 #define NUM_ROWS    25
 #define ATTRIB      0x7
@@ -18,7 +19,7 @@
 
 static int screen_x;
 static int screen_y;
-static char* video_mem = (char*)VIDEO;
+static char* video_mem = (char*)VMEM_VIDEO;
 
 void backspace(void) {
     screen_x = (screen_x + NUM_COLS - 1) % NUM_COLS;
