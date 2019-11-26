@@ -10,6 +10,7 @@
 #include "types.h"
 
 #define PMEM_VIDEO          0xB8000
+#define PMEM_VIDEO_BUFFER   0xB9000
 #define VMEM_VIDEO          0xB8000
 #define VMEM_VIDEO_USER     0x8400000
 

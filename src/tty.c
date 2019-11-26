@@ -6,6 +6,9 @@
 #include "tty.h"
 
 #include "lib.h"
+#include "memory.h"
+#include "page.h"
+#include "process.h"
 #include "signal.h"
 
 #define KEY_DOWN_LEFT_CTRL      0x1D
@@ -93,6 +96,37 @@ void start_tty(int32_t index) {
     }
 
     tty0 = tty;
+}
+
+void swap_tty(int32_t index) {
+    tty_t* target = &ttys[index];
+    tty_t* source = tty0;
+
+    if (target == source)
+        return;
+
+    cli();
+    disable_paging();
+
+    memcpy((uint8_t*)tty_buffer(source), (uint8_t*)PMEM_VIDEO, BLOCK_4KB);
+    memcpy((uint8_t*)PMEM_VIDEO, (uint8_t*)tty_buffer(target), BLOCK_4KB);
+
+    tty_t* tty = proc0->tty;
+
+    if (source == tty)
+        map_memory_page(VMEM_VIDEO,
+                        tty_buffer(tty),
+                        SUPERVISOR,
+                        page_table_kernel);
+    if (target == tty)
+        map_memory_page(VMEM_VIDEO, PMEM_VIDEO, SUPERVISOR, page_table_kernel);
+
+    enable_paging();
+    sti();
+}
+
+uint32_t tty_buffer(tty_t* tty) {
+    return PMEM_VIDEO_BUFFER + (tty - ttys) * BLOCK_4KB;
 }
 
 void handle_event(uint32_t scancode) {

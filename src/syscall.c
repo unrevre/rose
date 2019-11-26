@@ -22,8 +22,7 @@ int32_t halt(uint8_t status) {
     pcb_t* parent = process->parent;
 
     process->state = PROC_IDLE;
-
-    tty0->nproc--;
+    --process->tty->nproc;
 
     if (parent != 0) {
         int32_t pid = parent->pid;
@@ -96,8 +95,6 @@ int32_t execute(const int8_t* command) {
     process->pid = pid;
     process->state = PROC_ACTIVE;
 
-    tty0->nproc++;
-
     asm volatile("                      \n\
                  leal   4(%%ebp), %0    \n\
                  movl   %%ebp, %1       \n\
@@ -113,6 +110,9 @@ int32_t execute(const int8_t* command) {
     process->sigmask = 0;
     process->sigqueue = 0;
     memset(process->sighandle, 0, NSIG * sizeof(int32_t*));
+
+    process->tty = parent ? parent->tty : tty0;
+    ++process->tty->nproc;
 
     process->fds[0] = stdin;
     process->fds[1] = stdout;
@@ -254,7 +254,10 @@ int32_t vidmap(uint8_t** address) {
     if (value < VMEM_USER || value >= VMEM_USER + BLOCK_4MB)
         return -1;
 
-    map_memory_page(VMEM_VIDEO_USER, PMEM_VIDEO, USER, page_table_user);
+    tty_t* tty = proc0->tty;
+
+    uint32_t buffer = (tty == tty0) ? PMEM_VIDEO : tty_buffer(tty);
+    map_memory_page(VMEM_VIDEO_USER, buffer, USER, page_table_user);
     *address = (uint8_t*)VMEM_VIDEO_USER;
 
     return 0;

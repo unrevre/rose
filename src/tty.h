@@ -39,6 +39,9 @@ extern tty_t* tty0;
 void init_tty(void);
 
 void start_tty(int32_t index);
+void swap_tty(int32_t index);
+
+uint32_t tty_buffer(tty_t* tty);
 
 void handle_event(uint32_t scancode);
 
