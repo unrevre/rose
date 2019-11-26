@@ -26,6 +26,10 @@
 #define KEY_DOWN_ENTER          0x1C
 #define KEY_DOWN_BACKSPACE      0x0E
 
+#define KEY_DOWN_1              0x02
+#define KEY_DOWN_2              0x03
+#define KEY_DOWN_3              0x04
+#define KEY_DOWN_4              0x05
 #define KEY_DOWN_C              0x2E
 
 static uint8_t char_map_def[0x80] = {
@@ -86,6 +90,8 @@ void init_tty(void) {
 void start_tty(int32_t index) {
     tty_t* tty = &ttys[index];
 
+    swap_tty(index);
+
     if (tty->status == TTY_IDLE) {
         tty->line.index = 0;
         memset(tty->line.buffer, 0, LINE_MAX * sizeof(uint8_t));
@@ -94,8 +100,6 @@ void start_tty(int32_t index) {
         tty->pid = 0;
         tty->nproc = 0;
     }
-
-    tty0 = tty;
 }
 
 void swap_tty(int32_t index) {
@@ -125,6 +129,8 @@ void swap_tty(int32_t index) {
             map_memory_page(VMEM_VIDEO_USER, buffer, USER, page_table_user);
     }
 
+    tty0 = target;
+
     enable_paging();
     sti();
 }
@@ -140,6 +146,12 @@ void handle_event(uint32_t scancode) {
         switch (scancode) {
             case KEY_DOWN_C:
                 queue_signal(SIGINT);
+                return;
+            case KEY_DOWN_1:
+            case KEY_DOWN_2:
+            case KEY_DOWN_3:
+            case KEY_DOWN_4:
+                start_tty(scancode - KEY_DOWN_1);
                 return;
         }
     }
