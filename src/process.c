@@ -14,7 +14,7 @@ void init_pcb(void) {
     int32_t i;
     for (i = 0; i < PROC_MAX; ++i) {
         pcb[i] = (pcb_t*)(PROC_BASE - STACK_SIZE * i);
-        pcb[i]->state = PROC_IDLE;
+        pcb[i]->state = PROC_FREE;
     }
 
     proc0 = 0;

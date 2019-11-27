@@ -36,8 +36,9 @@ struct pcb_t {
 #define PROC_INV    -1
 #define PROC_MAX    4
 
-#define PROC_IDLE   0
-#define PROC_ACTIVE 1
+#define PROC_FREE   0
+#define PROC_SLEEP  1
+#define PROC_ACTIVE 2
 
 extern pcb_t* pcb[PROC_MAX];
 extern pcb_t* proc0;

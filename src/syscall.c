@@ -21,7 +21,7 @@ int32_t halt(uint8_t status) {
     pcb_t* process = proc0;
     pcb_t* parent = process->parent;
 
-    process->state = PROC_IDLE;
+    process->state = PROC_FREE;
     --process->tty->nproc;
 
     if (parent != 0) {
@@ -90,6 +90,9 @@ int32_t execute(const int8_t* command) {
 
     pcb_t* parent = proc0;
     pcb_t* process = pcb[pid];
+
+    if (parent != 0)
+        parent->state = PROC_SLEEP;
 
     process->parent = parent;
     process->pid = pid;
