@@ -150,10 +150,11 @@ int32_t execute(const int8_t* command) {
                  movw   %%dx, %%ds      \n\
                  iret                   \n\
                  halt_process:          \n\
+                 leave                  \n\
+                 ret                    \n\
                  "
                  :
-                 : "r" (entry_point)
-                 : "edx"
+                 : "rm" (entry_point)
                 );
 
     return 0;
