@@ -46,3 +46,9 @@ void map_memory_page(uint32_t virtual, uint32_t physical,
     page_table[pt_index].global = 0;
     page_table[pt_index].page_base_address = physical >> 12;
 }
+
+void map_video_memory(uint32_t address) {
+    map_memory_page(VMEM_VIDEO, address, SUPERVISOR, page_table_kernel);
+    if (page_table_user[(VMEM_VIDEO_USER >> 12) & 0x3FF].present)
+        map_memory_page(VMEM_VIDEO_USER, address, USER, page_table_user);
+}

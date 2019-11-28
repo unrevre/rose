@@ -45,19 +45,9 @@ void raise(int32_t pid) {
 
     map_memory_block(VMEM_USER, PMEM_USER + pid * BLOCK_4MB, USER);
 
-    tty_t* tty = tty0;
+    tty_t* tty = target->tty;
 
-    uint32_t buffer = 0;
-    if (tty == process->tty)
-        buffer = tty_buffer(tty);
-    if (tty == target->tty)
-        buffer = PMEM_VIDEO;
-
-    if (buffer) {
-        map_memory_page(VMEM_VIDEO, buffer, SUPERVISOR, page_table_kernel);
-        if (page_table_user[(VMEM_VIDEO_USER >> 12) & 0x3FF].present)
-            map_memory_page(VMEM_VIDEO_USER, buffer, USER, page_table_user);
-    }
+    map_video_memory((tty0 == tty) ? PMEM_VIDEO : tty_buffer(tty));
 
     tss.esp0 = KERNEL_BASE - pid * STACK_SIZE;
 

@@ -117,17 +117,7 @@ void swap_tty(int32_t index) {
 
     tty_t* tty = proc0->tty;
 
-    uint32_t buffer = 0;
-    if (source == tty)
-        buffer = tty_buffer(tty);
-    if (target == tty)
-        buffer = PMEM_VIDEO;
-
-    if (buffer) {
-        map_memory_page(VMEM_VIDEO, buffer, SUPERVISOR, page_table_kernel);
-        if (page_table_user[(VMEM_VIDEO_USER >> 12) & 0x3FF].present)
-            map_memory_page(VMEM_VIDEO_USER, buffer, USER, page_table_user);
-    }
+    map_video_memory((target == tty) ? PMEM_VIDEO : tty_buffer(tty));
 
     tty0 = target;
 

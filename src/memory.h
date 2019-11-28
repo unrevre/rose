@@ -38,6 +38,8 @@ void map_memory_block(uint32_t virtual, uint32_t physical,
 void map_memory_page(uint32_t virtual, uint32_t physical,
                      uint32_t user_supervisor, PTE_t* page_table);
 
+void map_video_memory(uint32_t address);
+
 #endif /* ASM */
 
 #endif /* MEMORY_H */
