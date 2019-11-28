@@ -7,6 +7,7 @@
 
 #include "i8259.h"
 #include "lib.h"
+#include "schedule.h"
 
 void init_pit(void) {
     outb(PIT_MODE, MODE_CMD_REGISTER);
@@ -19,4 +20,8 @@ void handle_pit(void) {
     send_eoi(IRQ_PIT);
 
     sti();
+
+    int32_t pid = schedule_next();
+    if (pid != -1)
+        raise(pid);
 }
