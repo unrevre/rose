@@ -126,7 +126,9 @@ int32_t execute(const int8_t* command) {
     process->sigqueue = 0;
     memset(process->sighandle, 0, NSIG * sizeof(int32_t*));
 
-    process->tty = parent ? parent->tty : tty0;
+    tty_t* active = tty0;
+
+    process->tty = parent ? parent->tty : active;
     ++process->tty->nproc;
 
     process->fds[0] = stdin;
@@ -138,6 +140,9 @@ int32_t execute(const int8_t* command) {
     disable_paging();
     map_memory_block(VMEM_USER, PMEM_USER + pid * BLOCK_4MB, USER);
     enable_paging();
+
+    tty_t* tty = process->tty;
+    map_video_memory((active == tty) ? PMEM_VIDEO : tty_buffer(tty));
 
     proc0 = process;
 
