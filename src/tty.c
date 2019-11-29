@@ -110,18 +110,17 @@ void swap_tty(int32_t index) {
         return;
 
     cli();
-    disable_paging();
 
+    disable_paging();
     memcpy((uint8_t*)tty_buffer(source), (uint8_t*)PMEM_VIDEO, BLOCK_4KB);
     memcpy((uint8_t*)PMEM_VIDEO, (uint8_t*)tty_buffer(target), BLOCK_4KB);
 
     tty_t* tty = proc0->tty;
-
     map_video_memory((target == tty) ? PMEM_VIDEO : tty_buffer(tty));
+    enable_paging();
 
     tty0 = target;
 
-    enable_paging();
     sti();
 }
 

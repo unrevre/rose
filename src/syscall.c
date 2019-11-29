@@ -139,10 +139,10 @@ int32_t execute(const int8_t* command) {
 
     disable_paging();
     map_memory_block(VMEM_USER, PMEM_USER + pid * BLOCK_4MB, USER);
-    enable_paging();
 
     tty_t* tty = process->tty;
     map_video_memory((active == tty) ? PMEM_VIDEO : tty_buffer(tty));
+    enable_paging();
 
     proc0 = process;
 

@@ -41,17 +41,16 @@ void raise(int32_t pid) {
                 );
 
     cli();
-    disable_paging();
 
+    disable_paging();
     map_memory_block(VMEM_USER, PMEM_USER + pid * BLOCK_4MB, USER);
 
     tty_t* tty = target->tty;
-
     map_video_memory((tty0 == tty) ? PMEM_VIDEO : tty_buffer(tty));
+    enable_paging();
 
     tss.esp0 = KERNEL_BASE - pid * STACK_SIZE;
 
-    enable_paging();
     sti();
 
     proc0 = target;
