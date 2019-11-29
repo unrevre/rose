@@ -196,19 +196,18 @@ void handle_event(uint32_t scancode) {
 /* File operations (tty) */
 
 int32_t tty_read(int32_t fd, int8_t* buf, int32_t nbytes) {
-    while (!(tty0->status & TTY_READ));
+    tty_t* tty = tty0;
 
-    int32_t length = strnlen(tty0->line.buffer, nbytes);
-    strncpy(buf, tty0->line.buffer, length);
+    while (!(tty->status & TTY_READ));
 
-    cli();
-    memmove(tty0->line.buffer, tty0->line.buffer + length,
-            LINE_MAX - length);
-    memset(tty0->line.buffer + LINE_MAX - length, '\0', length);
-    tty0->line.index = tty0->line.index - length;
+    int32_t length = strnlen(tty->line.buffer, nbytes);
+    strncpy(buf, tty->line.buffer, length);
 
-    tty0->status &= ~TTY_READ;
-    sti();
+    memmove(tty->line.buffer, tty->line.buffer + length, LINE_MAX - length);
+    memset(tty->line.buffer + LINE_MAX - length, '\0', length);
+    tty->line.index = tty->line.index - length;
+
+    tty->status &= ~TTY_READ;
 
     return length;
 }
