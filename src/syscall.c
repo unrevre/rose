@@ -91,6 +91,18 @@ int32_t execute(const int8_t* command) {
     pcb_t* parent = proc0;
     pcb_t* process = pcb[pid];
 
+    if ((uint32_t)command < PMEM_USER) {
+        asm volatile("                      \n\
+                     movl   %%esp, %0       \n\
+                     movl   %%ebp, %1       \n\
+                     "
+                     : "=rm" (parent->task_esp),
+                       "=rm" (parent->task_ebp)
+                    );
+
+        parent = 0;
+    }
+
     if (parent != 0)
         parent->state = PROC_SLEEP;
 
