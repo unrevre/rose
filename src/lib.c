@@ -17,8 +17,8 @@
 #define VGA_INDEX_REGISTER  0x3D4
 #define VGA_DATA_REGISTER   0x3D5
 
-static int offset;
-static char* video_mem = (char*)VMEM_VIDEO;
+static int32_t offset;
+static uint8_t* video_mem = (uint8_t*)VMEM_VIDEO;
 
 void exchange(int32_t* old, int32_t new) {
     *old = offset;
@@ -30,8 +30,8 @@ void exchange(int32_t* old, int32_t new) {
 void backspace(void) {
     --offset;
 
-    *(uint8_t*)(video_mem + (offset << 1)) = ' ';
-    *(uint8_t*)(video_mem + (offset << 1) + 1) = ATTRIB;
+    *(video_mem + (offset << 1)) = ' ';
+    *(video_mem + (offset << 1) + 1) = ATTRIB;
 
     blink();
 }
@@ -49,14 +49,12 @@ void newline(void) {
 
 void scroll(void) {
     int32_t area = NUM_COLS * (NUM_ROWS - 1);
-    memmove((uint8_t*)video_mem,
-            (uint8_t*)(video_mem + (NUM_COLS << 1)),
-            area << 1);
+    memmove(video_mem, video_mem + (NUM_COLS << 1), area << 1);
 
     int32_t i;
     for (i = 0; i < NUM_COLS; ++i) {
-        *(uint8_t*)(video_mem + ((area + i) << 1)) = ' ';
-        *(uint8_t*)(video_mem + ((area + i) << 1) + 1) = ATTRIB;
+        *(video_mem + ((area + i) << 1)) = ' ';
+        *(video_mem + ((area + i) << 1) + 1) = ATTRIB;
     }
 }
 
@@ -65,8 +63,8 @@ void clear(void) {
 
     int32_t i;
     for (i = 0; i < NUM_ROWS * NUM_COLS; i++) {
-        *(uint8_t*)(video_mem + (i << 1)) = ' ';
-        *(uint8_t*)(video_mem + (i << 1) + 1) = ATTRIB;
+        *(video_mem + (i << 1)) = ' ';
+        *(video_mem + (i << 1) + 1) = ATTRIB;
     }
 
     blink();
@@ -198,8 +196,8 @@ void putc(uint8_t c) {
     if (c == '\n' || c == '\r') {
         newline();
     } else {
-        *(uint8_t*)(video_mem + (offset << 1)) = c;
-        *(uint8_t*)(video_mem + (offset << 1) + 1) = ATTRIB;
+        *(video_mem + (offset << 1)) = c;
+        *(video_mem + (offset << 1) + 1) = ATTRIB;
 
         ++offset;
 
