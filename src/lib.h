@@ -8,6 +8,8 @@
 
 #include "types.h"
 
+void exchange(int32_t* x0, int32_t* y0, int32_t x1, int32_t y1);
+
 void backspace(void);
 void newline(void);
 void scroll(void);

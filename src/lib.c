@@ -21,6 +21,16 @@ static int screen_x;
 static int screen_y;
 static char* video_mem = (char*)VMEM_VIDEO;
 
+void exchange(int32_t* x0, int32_t* y0, int32_t x1, int32_t y1) {
+    *x0 = screen_x;
+    *y0 = screen_y;
+
+    screen_x = x1;
+    screen_y = y1;
+
+    blink();
+}
+
 void backspace(void) {
     screen_x = (screen_x + NUM_COLS - 1) % NUM_COLS;
     screen_y = screen_y - (screen_x / (NUM_COLS - 1));
