@@ -25,8 +25,7 @@ typedef struct {
     uint32_t status;
     int32_t pid;
     int32_t nproc;
-    int32_t x;
-    int32_t y;
+    int32_t offset;
     lbuf_t line;
 } tty_t;
 

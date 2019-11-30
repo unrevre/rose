@@ -83,8 +83,7 @@ void init_tty(void) {
     int32_t i;
     for (i = 0; i < TTY_MAX; ++i) {
         ttys[i].status = TTY_IDLE;
-        ttys[i].x = 0;
-        ttys[i].y = 0;
+        ttys[i].offset = 0;
     }
 
     tty0 = &ttys[0];
@@ -122,7 +121,7 @@ void swap_tty(int32_t index) {
     map_video_memory((target == tty) ? PMEM_VIDEO : tty_buffer(tty));
     enable_paging();
 
-    exchange(&source->x, &source->y, target->x, target->y);
+    exchange(&source->offset, target->offset);
 
     tty0 = target;
 
