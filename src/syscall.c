@@ -22,6 +22,7 @@ int32_t halt(uint8_t status) {
     pcb_t* parent = process->parent;
 
     process->state = PROC_FREE;
+    process->tty->pid = !parent ? PROC_INV : parent->pid;
     --process->tty->nproc;
 
     if (parent != 0) {
@@ -129,6 +130,7 @@ int32_t execute(const int8_t* command) {
     tty_t* active = tty0;
 
     process->tty = parent ? parent->tty : active;
+    process->tty->pid = pid;
     ++process->tty->nproc;
 
     process->fds[0] = stdin;

@@ -99,7 +99,7 @@ void start_tty(int32_t index) {
         memset(tty->line.buffer, 0, LINE_MAX * sizeof(uint8_t));
 
         tty->status = TTY_ACTIVE;
-        tty->pid = 0;
+        tty->pid = PROC_INV;
         tty->nproc = 0;
     }
 }
