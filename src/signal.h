@@ -12,7 +12,7 @@
 #define SIGUSR2 6
 #define NSIG    7
 
-void queue_signal(uint32_t signum);
+void queue_signal(int32_t pid, uint32_t signum);
 void deliver_signal(void);
 void invoke_sigreturn(void);
 

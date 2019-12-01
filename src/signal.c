@@ -4,11 +4,11 @@
 #include "process.h"
 #include "syscall.h"
 
-void queue_signal(uint32_t signum) {
+void queue_signal(int32_t pid, uint32_t signum) {
     if (signum >= NSIG)
         return;
 
-    pcb_t* process = proc0;
+    pcb_t* process = pcb[pid];
 
     uint32_t signal = 0x1 << signum;
     if (process->sigmask & signal)

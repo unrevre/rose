@@ -138,7 +138,7 @@ void handle_event(uint32_t scancode) {
     if (flags.ctrl) {
         switch (scancode) {
             case KEY_DOWN_C:
-                queue_signal(SIGINT);
+                queue_signal(tty->pid, SIGINT);
                 return;
             case KEY_DOWN_1:
             case KEY_DOWN_2:

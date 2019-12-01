@@ -6,12 +6,13 @@
 #include "exception.h"
 
 #include "lib.h"
+#include "process.h"
 #include "signal.h"
 
 #define default_handler(exception, string, signal)  \
     void handle_##exception(void) {                 \
         printf(#string "\n");                       \
-        queue_signal(signal);                       \
+        queue_signal(proc0->pid, signal);           \
     }
 
 default_handler(divide_error, "divide error", SIGSEGV)
