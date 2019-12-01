@@ -23,8 +23,11 @@
 void entry(uint32_t magic, uint32_t addr) {
     multiboot_info_t *mbi;
 
+    /* Initialise terminal */
+    init_tty();
+
     /* Clear screen */
-    clear();
+    clear(tty0);
 
     /* Check boot loader magic numbers for multiboot compliance */
     if (magic != MULTIBOOT_BOOTLOADER_MAGIC) {
@@ -149,8 +152,6 @@ void entry(uint32_t magic, uint32_t addr) {
     init_pit();
     init_rtc();
 
-    init_tty();
-
     init_fd();
     init_pcb();
 
@@ -176,7 +177,7 @@ void entry(uint32_t magic, uint32_t addr) {
     printf("Enabling Interrupts\n");
     sti();
 
-    /* Initialise terminal */
+    /* Start terminal */
     start_tty(0);
 
     /* Spin (nicely, to not chew up cycles) */

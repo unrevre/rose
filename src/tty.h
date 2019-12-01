@@ -26,6 +26,7 @@ typedef struct {
     int32_t pid;
     int32_t nproc;
     int32_t offset;
+    uint8_t* address;
     lbuf_t line;
 } tty_t;
 

@@ -121,11 +121,11 @@ void swap_tty(int32_t index) {
     map_video_memory((target == tty) ? PMEM_VIDEO : tty_buffer(tty));
     enable_paging();
 
-    exchange(&source->offset, target->offset);
-
     tty0 = target;
 
     sti();
+
+    blink();
 }
 
 uint32_t tty_buffer(tty_t* tty) {
@@ -171,12 +171,12 @@ void handle_event(uint32_t scancode) {
             break;
         case KEY_DOWN_ENTER:
             tty->status |= TTY_READ;
-            newline();
+            newline(tty0);
             break;
         case KEY_DOWN_BACKSPACE:
             if (tty->line.index) {
                 tty->line.buffer[--tty->line.index] = '\0';
-                backspace();
+                backspace(tty);
             }
             break;
     }
@@ -186,14 +186,14 @@ void handle_event(uint32_t scancode) {
     if (scancode < 0x40 && char_map[scancode]) {
         if (tty->line.index == LINE_MAX) {
             tty->status |= TTY_READ;
-            newline();
+            newline(tty);
         }
 
         if (flags.shift)
             scancode += 0x40;
 
         tty->line.buffer[tty->line.index] = char_map[scancode];
-        putc(tty->line.buffer[tty->line.index++]);
+        print(tty, tty->line.buffer[tty->line.index++]);
     }
 }
 
@@ -217,9 +217,11 @@ int32_t tty_read(int32_t fd, int8_t* buf, int32_t nbytes) {
 }
 
 int32_t tty_write(const int8_t* buf, int32_t nbytes) {
+    pcb_t* process = proc0;
+
     int32_t i;
     for (i = 0; i < nbytes; ++i)
-        putc(buf[i]);
+        print(process->tty, buf[i]);
 
     return nbytes;
 }
