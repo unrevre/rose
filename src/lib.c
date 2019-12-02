@@ -63,6 +63,7 @@ void newline(tty_t* tty) {
 
 void scroll(tty_t* tty) {
     int32_t* offset = &tty->offset;
+    uint8_t* address = tty == tty0 ? pmem_video : vmem_video;
 
     if (*offset < NUM_ROWS * NUM_COLS)
         return;
@@ -70,12 +71,12 @@ void scroll(tty_t* tty) {
     *offset -= NUM_COLS;
 
     int32_t block = NUM_COLS * (NUM_ROWS - 1);
-    memmove(vmem_video, vmem_video + (NUM_COLS << 1), block << 1);
+    memmove(address, address + (NUM_COLS << 1), block << 1);
 
     int32_t i;
     for (i = 0; i < NUM_COLS; ++i) {
-        *(vmem_video + ((block + i) << 1)) = ' ';
-        *(vmem_video + ((block + i) << 1) + 1) = ATTRIB;
+        *(address + ((block + i) << 1)) = ' ';
+        *(address + ((block + i) << 1) + 1) = ATTRIB;
     }
 }
 
