@@ -29,6 +29,7 @@
 #define BLOCK_4MB           0x400000
 
 #define KERNEL_BASE         (VMEM_KERNEL + BLOCK_4MB)
+#define PROCESS_BASE        (KERNEL_BASE - STACK_SIZE)
 
 #ifndef ASM
 

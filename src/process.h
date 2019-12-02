@@ -33,8 +33,6 @@ struct pcb_t {
     fd_t fds[FD_MAX];
 };
 
-#define PROC_BASE   (KERNEL_BASE - STACK_SIZE)
-
 #define PROC_INV    -1
 #define PROC_MAX    4
 
