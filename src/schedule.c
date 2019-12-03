@@ -32,13 +32,15 @@ void raise(int32_t pid) {
     pcb_t* process = proc0;
     pcb_t* target = pcb[pid];
 
-    asm volatile("                      \n\
-                 movl   %%esp, %0       \n\
-                 movl   %%ebp, %1       \n\
-                 "
-                 : "=rm" (process->task_esp),
-                   "=rm" (process->task_ebp)
-                );
+    if (process) {
+        asm volatile("                      \n\
+                     movl   %%esp, %0       \n\
+                     movl   %%ebp, %1       \n\
+                     "
+                     : "=rm" (process->task_esp),
+                       "=rm" (process->task_ebp)
+                    );
+    }
 
     cli();
 
