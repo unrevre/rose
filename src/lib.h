@@ -6,17 +6,7 @@
 #ifndef LIB_H
 #define LIB_H
 
-#include "tty.h"
 #include "types.h"
-
-void backspace(tty_t* tty);
-void display(tty_t* tty, uint8_t c);
-void newline(tty_t* tty);
-void scroll(tty_t* tty);
-void clear(tty_t* tty);
-void blink(void);
-
-void print(tty_t* tty, uint8_t c);
 
 int32_t printf(int8_t* format, ...);
 int32_t puts(int8_t* s);

@@ -16,6 +16,7 @@
 #include "rtc.h"
 #include "tty.h"
 #include "types.h"
+#include "video.h"
 #include "x86_desc.h"
 
 #define CHECK_FLAG(flags, bit)  ((flags) & (1 << (bit)))

@@ -10,6 +10,7 @@
 #include "page.h"
 #include "process.h"
 #include "signal.h"
+#include "video.h"
 
 #define KEY_DOWN_LEFT_CTRL      0x1D
 #define KEY_UP_LEFT_CTRL        0x9D
