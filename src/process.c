@@ -17,7 +17,7 @@ void init_pcb(void) {
         pcb[i]->state = PROC_FREE;
     }
 
-    proc0 = 0;
+    proc0 = NULL;
 }
 
 int32_t alloc_pid(void) {

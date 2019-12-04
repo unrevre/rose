@@ -60,7 +60,7 @@ int32_t query_inode(const int8_t* fname) {
 
 dentry_t* query_dentry(const int8_t* fname) {
     if (fname[0] == '\0')
-        return 0;
+        return NULL;
 
     int32_t i;
     for (i = 0; i < 63; ++i) {
@@ -68,7 +68,7 @@ dentry_t* query_dentry(const int8_t* fname) {
             return &fs->boot.dentries[i];
     }
 
-    return 0;
+    return NULL;
 }
 
 /* File operations (directory) */

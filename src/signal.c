@@ -33,7 +33,7 @@ void deliver_signal(void) {
 
     int32_t* handler = process->sighandle[signum];
 
-    if (!handler) {
+    if (handler == NULL) {
         switch (signum) {
             case SIGINT:
             case SIGILL:

@@ -13,7 +13,7 @@
 int32_t schedule_next(void) {
     pcb_t* process = proc0;
 
-    if (!process)
+    if (process == NULL)
         return -1;
 
     int32_t pid = process->pid + 1;
@@ -32,7 +32,7 @@ void raise(int32_t pid) {
     pcb_t* process = proc0;
     pcb_t* target = pcb[pid];
 
-    if (process) {
+    if (process != NULL) {
         asm volatile("                      \n\
                      movl   %%esp, %0       \n\
                      movl   %%ebp, %1       \n\

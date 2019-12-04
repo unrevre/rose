@@ -25,7 +25,7 @@ int32_t halt(uint8_t status) {
     process->tty->pid = !parent ? PROC_INV : parent->pid;
     --process->tty->nproc;
 
-    if (parent != 0) {
+    if (parent != NULL) {
         int32_t pid = parent->pid;
         parent->state = PROC_ACTIVE;
 
@@ -101,10 +101,10 @@ int32_t execute(const int8_t* command) {
                        "=rm" (parent->task_ebp)
                     );
 
-        parent = 0;
+        parent = NULL;
     }
 
-    if (parent != 0)
+    if (parent != NULL)
         parent->state = PROC_SLEEP;
 
     process->parent = parent;
@@ -205,7 +205,7 @@ int32_t write(int32_t fd, const void* buf, int32_t nbytes) {
 
 int32_t open(const int8_t* fname) {
     dentry_t* dentry = query_dentry(fname);
-    if (dentry == 0)
+    if (dentry == NULL)
         return -1;
 
     pcb_t* process = proc0;
