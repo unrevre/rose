@@ -6,20 +6,8 @@
 #ifndef TTY_H
 #define TTY_H
 
+#include "keyboard.h"
 #include "types.h"
-
-typedef struct {
-    int32_t ctrl;
-    int32_t shift;
-    int32_t capslock;
-} modifiers_t;
-
-#define LINE_MAX    256
-
-typedef struct {
-    int8_t buffer[LINE_MAX];
-    int32_t index;
-} lbuf_t;
 
 typedef struct {
     uint32_t status;
@@ -44,8 +32,6 @@ void start_tty(int32_t index);
 void swap_tty(int32_t index);
 
 uint32_t tty_buffer(tty_t* tty);
-
-void handle_event(uint32_t scancode);
 
 /* File operations (tty) */
 

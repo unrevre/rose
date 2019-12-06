@@ -7,6 +7,7 @@
 #include "fsdef.h"
 #include "i8259.h"
 #include "idt.h"
+#include "keyboard.h"
 #include "lib.h"
 #include "memory.h"
 #include "multiboot.h"
@@ -151,6 +152,7 @@ void entry(uint32_t magic, uint32_t addr) {
      * PIC, any other initialisation routines... */
     init_i8259();
     init_pit();
+    init_kbd();
     init_rtc();
 
     init_fd();
