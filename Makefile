@@ -1,10 +1,9 @@
 CC = i386-elf-gcc
 
-CFLAGS 	+= -Wall -fno-builtin -fno-stack-protector -nostdlib
+CFLAGS += -g -m32 -Wall -fno-builtin -fno-stack-protector
 ASFLAGS +=
 LDFLAGS += -nostdlib -static
-
-CPPFLAGS += -nostdinc -g
+CPPFLAGS += -nostdinc
 
 SRCS = $(wildcard $(SRCDIR)/*.S) $(wildcard $(SRCDIR)/*.c)
 
