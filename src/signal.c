@@ -1,6 +1,5 @@
 #include "signal.h"
 
-#include "lib.h"
 #include "process.h"
 #include "syscall.h"
 

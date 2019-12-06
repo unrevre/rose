@@ -6,7 +6,6 @@
 #include "idt.h"
 
 #include "interrupt.h"
-#include "types.h"
 #include "x86_desc.h"
 
 void init_idt(void) {

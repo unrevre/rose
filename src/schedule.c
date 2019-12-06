@@ -7,7 +7,9 @@
 
 #include "lib.h"
 #include "memory.h"
+#include "page.h"
 #include "process.h"
+#include "tty.h"
 #include "x86_desc.h"
 
 int32_t schedule_next(void) {

@@ -8,6 +8,7 @@
 #include "i8259.h"
 #include "lib.h"
 #include "schedule.h"
+#include "types.h"
 
 void init_pit(void) {
     outb(PIT_MODE, MODE_CMD_REGISTER);

@@ -5,6 +5,7 @@
 
 #include "fsdef.h"
 
+#include "fd.h"
 #include "lib.h"
 #include "process.h"
 

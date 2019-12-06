@@ -5,11 +5,13 @@
 
 #include "syscall.h"
 
+#include "fd.h"
 #include "fsdef.h"
 #include "lib.h"
 #include "memory.h"
 #include "page.h"
 #include "process.h"
+#include "signal.h"
 #include "tty.h"
 #include "x86_desc.h"
 
