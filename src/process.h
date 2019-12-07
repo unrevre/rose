@@ -8,7 +8,6 @@
 
 #include "fd.h"
 #include "signal.h"
-#include "tty.h"
 #include "types.h"
 
 #define FD_INV      -1
@@ -26,7 +25,7 @@ struct pcb_t {
     int32_t* sighandle[NSIG];
     uint32_t task_esp;
     uint32_t task_ebp;
-    tty_t* tty;
+    struct tty_t* tty;
     struct pcb_t* parent;
     fd_t fds[FD_MAX];
 };

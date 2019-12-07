@@ -49,7 +49,7 @@ void raise(int32_t pid) {
     disable_paging();
     map_memory_block(VMEM_USER, PMEM_USER + pid * BLOCK_4MB, USER);
 
-    tty_t* tty = target->tty;
+    struct tty_t* tty = target->tty;
     map_video_memory((tty0 == tty) ? PMEM_VIDEO : tty_buffer(tty));
     enable_paging();
 

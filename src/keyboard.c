@@ -94,7 +94,7 @@ void handle_kbd(void) {
 }
 
 void handle_key(uint32_t scancode) {
-    tty_t* tty = tty0;
+    struct tty_t* tty = tty0;
 
     if (flags.ctrl) {
         switch (scancode) {

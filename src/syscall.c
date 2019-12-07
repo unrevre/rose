@@ -129,7 +129,7 @@ int32_t execute(const int8_t* command) {
     process->sigqueue = 0;
     memset(process->sighandle, 0, NSIG * sizeof(int32_t*));
 
-    tty_t* active = tty0;
+    struct tty_t* active = tty0;
 
     process->tty = parent ? parent->tty : active;
     process->tty->pid = pid;
@@ -144,7 +144,7 @@ int32_t execute(const int8_t* command) {
     disable_paging();
     map_memory_block(VMEM_USER, PMEM_USER + pid * BLOCK_4MB, USER);
 
-    tty_t* tty = process->tty;
+    struct tty_t* tty = process->tty;
     map_video_memory((active == tty) ? PMEM_VIDEO : tty_buffer(tty));
     enable_paging();
 
@@ -279,7 +279,7 @@ int32_t vidmap(uint8_t** address) {
     if (value < VMEM_USER || value >= VMEM_USER + BLOCK_4MB)
         return -1;
 
-    tty_t* tty = proc0->tty;
+    struct tty_t* tty = proc0->tty;
 
     uint32_t buffer = (tty == tty0) ? PMEM_VIDEO : tty_buffer(tty);
     map_memory_page(VMEM_VIDEO_USER, buffer, USER, page_table_user);

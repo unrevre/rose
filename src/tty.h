@@ -9,14 +9,14 @@
 #include "keyboard.h"
 #include "types.h"
 
-typedef struct {
+struct tty_t {
     uint32_t status;
     int32_t pid;
     int32_t nproc;
     int32_t offset;
     uint8_t* address;
     lbuf_t line;
-} tty_t;
+};
 
 #define TTY_IDLE    0
 #define TTY_ACTIVE  1
@@ -24,14 +24,14 @@ typedef struct {
 
 #define TTY_MAX     4
 
-extern tty_t* tty0;
+extern struct tty_t* tty0;
 
 void init_tty(void);
 
 void start_tty(int32_t index);
 void swap_tty(int32_t index);
 
-uint32_t tty_buffer(tty_t* tty);
+uint32_t tty_buffer(struct tty_t* tty);
 
 /* File operations (tty) */
 

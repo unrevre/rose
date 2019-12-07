@@ -11,8 +11,8 @@
 #include "process.h"
 #include "video.h"
 
-tty_t ttys[TTY_MAX];
-tty_t* tty0;
+struct tty_t ttys[TTY_MAX];
+struct tty_t* tty0;
 
 void init_tty(void) {
     int32_t i;
@@ -25,7 +25,7 @@ void init_tty(void) {
 }
 
 void start_tty(int32_t index) {
-    tty_t* tty = &ttys[index];
+    struct tty_t* tty = &ttys[index];
 
     swap_tty(index);
 
@@ -40,8 +40,8 @@ void start_tty(int32_t index) {
 }
 
 void swap_tty(int32_t index) {
-    tty_t* target = &ttys[index];
-    tty_t* source = tty0;
+    struct tty_t* target = &ttys[index];
+    struct tty_t* source = tty0;
 
     if (target == source)
         return;
@@ -52,7 +52,7 @@ void swap_tty(int32_t index) {
     memcpy((uint8_t*)tty_buffer(source), (uint8_t*)PMEM_VIDEO, BLOCK_4KB);
     memcpy((uint8_t*)PMEM_VIDEO, (uint8_t*)tty_buffer(target), BLOCK_4KB);
 
-    tty_t* tty = proc0->tty;
+    struct tty_t* tty = proc0->tty;
     map_video_memory((target == tty) ? PMEM_VIDEO : tty_buffer(tty));
     enable_paging();
 
@@ -63,14 +63,14 @@ void swap_tty(int32_t index) {
     blink();
 }
 
-uint32_t tty_buffer(tty_t* tty) {
+uint32_t tty_buffer(struct tty_t* tty) {
     return PMEM_VIDEO_BUFFER + (tty - ttys) * BLOCK_4KB;
 }
 
 /* File operations (tty) */
 
 int32_t tty_read(int32_t fd, int8_t* buf, int32_t nbytes) {
-    tty_t* tty = tty0;
+    struct tty_t* tty = tty0;
 
     while (!(tty->status & TTY_READ));
 

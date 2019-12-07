@@ -22,14 +22,14 @@
 static uint8_t* pmem_video = (uint8_t*)PMEM_VIDEO;
 static uint8_t* vmem_video = (uint8_t*)VMEM_VIDEO;
 
-void print(tty_t* tty, uint8_t c) {
+void print(struct tty_t* tty, uint8_t c) {
     if (c == '\n' || c == '\r')
         newline(tty);
     else
         display(tty, c);
 }
 
-void backspace(tty_t* tty) {
+void backspace(struct tty_t* tty) {
     int32_t* offset = &tty->offset;
 
     --*offset;
@@ -40,7 +40,7 @@ void backspace(tty_t* tty) {
     blink();
 }
 
-void display(tty_t* tty, uint8_t c) {
+void display(struct tty_t* tty, uint8_t c) {
     int32_t* offset = &tty->offset;
     uint8_t* address = tty == tty0 ? pmem_video : vmem_video;
 
@@ -53,7 +53,7 @@ void display(tty_t* tty, uint8_t c) {
     blink();
 }
 
-void newline(tty_t* tty) {
+void newline(struct tty_t* tty) {
     int32_t* offset = &tty->offset;
 
     *offset = (*offset / NUM_COLS + 1) * NUM_COLS;
@@ -62,7 +62,7 @@ void newline(tty_t* tty) {
     blink();
 }
 
-void scroll(tty_t* tty) {
+void scroll(struct tty_t* tty) {
     int32_t* offset = &tty->offset;
     uint8_t* address = tty == tty0 ? pmem_video : vmem_video;
 
@@ -81,7 +81,7 @@ void scroll(tty_t* tty) {
     }
 }
 
-void clear(tty_t* tty) {
+void clear(struct tty_t* tty) {
     int32_t* offset = &tty->offset;
 
     *offset = 0;
