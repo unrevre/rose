@@ -27,7 +27,7 @@ struct pcb_t {
     uint32_t task_ebp;
     struct tty_t* tty;
     struct pcb_t* parent;
-    fd_t fds[FD_MAX];
+    struct fd_t fds[FD_MAX];
 };
 
 #define PROC_INV    -1

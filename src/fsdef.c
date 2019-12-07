@@ -9,9 +9,9 @@
 #include "lib.h"
 #include "process.h"
 
-fs_t* fs;
+struct fs_t* fs;
 
-void init_fs(fs_t* address) {
+void init_fs(struct fs_t* address) {
     fs = address;
 }
 
@@ -59,7 +59,7 @@ int32_t query_inode(const int8_t* fname) {
     return -1;
 }
 
-dentry_t* query_dentry(const int8_t* fname) {
+struct dentry_t* query_dentry(const int8_t* fname) {
     if (fname[0] == '\0')
         return NULL;
 

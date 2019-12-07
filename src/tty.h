@@ -15,7 +15,7 @@ struct tty_t {
     int32_t nproc;
     int32_t offset;
     uint8_t* address;
-    lbuf_t line;
+    struct lbuf_t line;
 };
 
 #define TTY_IDLE    0

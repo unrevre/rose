@@ -8,32 +8,32 @@
 
 #include "types.h"
 
-typedef struct {
+struct fops_t {
     int32_t (*read)(int32_t, int8_t*, int32_t);
     int32_t (*write)(const int8_t*, int32_t);
     int32_t (*open)(void);
     int32_t (*close)(void);
-} fops_t;
+};
 
-extern fops_t rtc_fops;
-extern fops_t tty_fops;
-extern fops_t dir_fops;
-extern fops_t file_fops;
+extern struct fops_t rtc_fops;
+extern struct fops_t tty_fops;
+extern struct fops_t dir_fops;
+extern struct fops_t file_fops;
 
-typedef struct {
+struct fd_t {
     uint32_t inode;
     uint32_t flags;
     uint32_t fpos;
-    fops_t* fops;
-} fd_t;
+    struct fops_t* fops;
+};
 
 #define FD_CLOSE    0x0
 #define FD_OPEN     0x1
 #define FD_READ     0x2
 #define FD_WRITE    0x4
 
-extern fd_t stdin;
-extern fd_t stdout;
+extern struct fd_t stdin;
+extern struct fd_t stdout;
 
 void init_fd(void);
 

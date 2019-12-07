@@ -8,44 +8,44 @@
 
 #include "types.h"
 
-typedef struct {
+struct dentry_t {
     int8_t fname[32];
     int32_t ftype;
     int32_t inode;
     uint32_t reserved[6];
-} dentry_t;
+};
 
-typedef struct {
+struct boot_t {
     int32_t ndentry;
     int32_t ninode;
     int32_t nblock;
     uint32_t reserved[13];
-    dentry_t dentries[63];
-} boot_t;
+    struct dentry_t dentries[63];
+};
 
-typedef struct {
+struct inode_t {
     int32_t size;
     int32_t block[1023];
-} inode_t;
+};
 
-typedef struct {
+struct block_t {
     int8_t raw[4096];
-} block_t;
+};
 
 #define INODE_MAX   0x24
 #define BLOCK_MAX   0x4E
 
-typedef struct {
-    boot_t boot;
-    inode_t inodes[INODE_MAX];
-    block_t blocks[BLOCK_MAX];
-} fs_t;
+struct fs_t {
+    struct boot_t boot;
+    struct inode_t inodes[INODE_MAX];
+    struct block_t blocks[BLOCK_MAX];
+};
 
-void init_fs(fs_t* address);
+void init_fs(struct fs_t* address);
 
 int32_t read_data(int32_t inode, int32_t offset, int8_t* buf, int32_t nbytes);
 int32_t query_inode(const int8_t* fname);
-dentry_t* query_dentry(const int8_t* fname);
+struct dentry_t* query_dentry(const int8_t* fname);
 
 /* File operations (directory) */
 

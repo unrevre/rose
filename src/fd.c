@@ -9,13 +9,13 @@
 #include "rtc.h"
 #include "tty.h"
 
-fops_t rtc_fops;
-fops_t tty_fops;
-fops_t dir_fops;
-fops_t file_fops;
+struct fops_t rtc_fops;
+struct fops_t tty_fops;
+struct fops_t dir_fops;
+struct fops_t file_fops;
 
-fd_t stdin;
-fd_t stdout;
+struct fd_t stdin;
+struct fd_t stdout;
 
 void init_fd(void) {
     rtc_fops.read = &rtc_read;

@@ -70,7 +70,7 @@ static uint8_t char_map_caps[0x80] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
-modifiers_t flags;
+struct modifiers_t flags;
 
 void init_kbd(void) {
     flags.ctrl = 0;

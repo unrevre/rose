@@ -13,18 +13,18 @@
 
 #define KBD_CONTINUE            0x30
 
-typedef struct {
+struct modifiers_t {
     int32_t ctrl;
     int32_t shift;
     int32_t capslock;
-} modifiers_t;
+};
 
 #define LINE_MAX    256
 
-typedef struct {
+struct lbuf_t {
     int8_t buffer[LINE_MAX];
     int32_t index;
-} lbuf_t;
+};
 
 void init_kbd(void);
 

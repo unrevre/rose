@@ -10,7 +10,7 @@
 
 #ifndef ASM
 
-typedef struct {
+struct pde_t {
     uint32_t present : 1;
     uint32_t read_write : 1;
     uint32_t user_supervisor : 1;
@@ -22,9 +22,9 @@ typedef struct {
     uint32_t global : 1;
     uint32_t available : 3;
     uint32_t page_table_base_address : 20;
-} __attribute__((packed)) PDE_t;
+} __attribute__((packed));
 
-typedef struct {
+struct pte_t {
     uint32_t present : 1;
     uint32_t read_write : 1;
     uint32_t user_supervisor : 1;
@@ -36,14 +36,14 @@ typedef struct {
     uint32_t global : 1;
     uint32_t available : 3;
     uint32_t page_base_address : 20;
-} __attribute__((packed)) PTE_t;
+} __attribute__((packed));
 
-PDE_t page_directory[1024];
+struct pde_t page_directory[1024];
 
-PTE_t page_table_kernel[1024];
-PTE_t page_table_user[1024];
+struct pte_t page_table_kernel[1024];
+struct pte_t page_table_user[1024];
 
-void init_paging(PDE_t* address);
+void init_paging(struct pde_t* address);
 void enable_paging(void);
 void disable_paging(void);
 

@@ -206,7 +206,7 @@ int32_t write(int32_t fd, const void* buf, int32_t nbytes) {
 }
 
 int32_t open(const int8_t* fname) {
-    dentry_t* dentry = query_dentry(fname);
+    struct dentry_t* dentry = query_dentry(fname);
     if (dentry == NULL)
         return -1;
 

@@ -15,16 +15,6 @@
 #define RTC_SREG_B      0x8B
 #define RTC_SREG_C      0x8C
 
-typedef struct {
-    uint8_t second;
-    uint8_t minute;
-    uint8_t hour;
-    uint8_t day;
-    uint8_t month;
-    uint8_t year;
-    uint8_t century;
-} time_t;
-
 #define RTC_IDLE        0
 #define RTC_OPEN        1
 #define RTC_WAIT        2
