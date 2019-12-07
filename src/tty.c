@@ -87,7 +87,7 @@ int32_t tty_read(int32_t fd, int8_t* buf, int32_t nbytes) {
 }
 
 int32_t tty_write(const int8_t* buf, int32_t nbytes) {
-    pcb_t* process = proc0;
+    struct pcb_t* process = proc0;
 
     int32_t i;
     for (i = 0; i < nbytes; ++i)

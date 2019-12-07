@@ -105,7 +105,7 @@ void blink(void) {
 }
 
 void vputc(uint8_t c) {
-    pcb_t* process = proc0;
+    struct pcb_t* process = proc0;
 
     print(process ? process->tty : tty0, c);
 }

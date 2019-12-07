@@ -7,7 +7,7 @@ void queue_signal(int32_t pid, uint32_t signum) {
     if (signum >= NSIG)
         return;
 
-    pcb_t* process = pcb[pid];
+    struct pcb_t* process = pcb[pid];
 
     uint32_t signal = 0x1 << signum;
     if (process->sigmask & signal)
@@ -17,7 +17,7 @@ void queue_signal(int32_t pid, uint32_t signum) {
 }
 
 void deliver_signal(void) {
-    pcb_t* process = proc0;
+    struct pcb_t* process = proc0;
     uint32_t sigqueue = process->sigqueue;
 
     if (!sigqueue)

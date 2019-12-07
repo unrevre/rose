@@ -20,8 +20,8 @@
 int32_t halt(uint8_t status) {
     cli();
 
-    pcb_t* process = proc0;
-    pcb_t* parent = process->parent;
+    struct pcb_t* process = proc0;
+    struct pcb_t* parent = process->parent;
 
     process->state = PROC_FREE;
     process->tty->pid = !parent ? PROC_INV : parent->pid;
@@ -91,8 +91,8 @@ int32_t execute(const int8_t* command) {
 
     cli();
 
-    pcb_t* parent = proc0;
-    pcb_t* process = pcb[pid];
+    struct pcb_t* parent = proc0;
+    struct pcb_t* process = pcb[pid];
 
     if ((uint32_t)command < PMEM_USER) {
         asm volatile("                      \n\
@@ -185,7 +185,7 @@ int32_t read(int32_t fd, void* buf, int32_t nbytes) {
     if (fd >= FD_MAX)
         return -1;
 
-    pcb_t* process = proc0;
+    struct pcb_t* process = proc0;
 
     if (!(process->fds[fd].flags & FD_READ))
         return -1;
@@ -197,7 +197,7 @@ int32_t write(int32_t fd, const void* buf, int32_t nbytes) {
     if (fd >= FD_MAX)
         return -1;
 
-    pcb_t* process = proc0;
+    struct pcb_t* process = proc0;
 
     if (!(process->fds[fd].flags & FD_WRITE))
         return -1;
@@ -210,7 +210,7 @@ int32_t open(const int8_t* fname) {
     if (dentry == NULL)
         return -1;
 
-    pcb_t* process = proc0;
+    struct pcb_t* process = proc0;
 
     int32_t fd;
     for (fd = 2; fd < FD_MAX; ++fd) {
@@ -252,7 +252,7 @@ int32_t close(int32_t fd) {
     if (fd >= FD_MAX)
         return -1;
 
-    pcb_t* process = proc0;
+    struct pcb_t* process = proc0;
 
     if (!(process->fds[fd].flags & FD_OPEN))
         return -1;
@@ -264,7 +264,7 @@ int32_t close(int32_t fd) {
 }
 
 int32_t getargs(int8_t* buf, int32_t nbytes) {
-    pcb_t* process = proc0;
+    struct pcb_t* process = proc0;
 
     if (strnlen(process->args, 64) > nbytes)
         return -1;

@@ -75,7 +75,7 @@ dentry_t* query_dentry(const int8_t* fname) {
 /* File operations (directory) */
 
 int32_t dir_read(int32_t fd, int8_t* buf, int32_t nbytes) {
-    pcb_t* process = proc0;
+    struct pcb_t* process = proc0;
 
     int32_t dentry = process->fds[fd].fpos;
     if (dentry == fs->boot.ndentry)
@@ -102,7 +102,7 @@ int32_t dir_close(void) {
 /* File operations (file) */
 
 int32_t file_read(int32_t fd, int8_t* buf, int32_t nbytes) {
-    pcb_t* process = proc0;
+    struct pcb_t* process = proc0;
 
     int32_t inode = process->fds[fd].inode;
     int32_t offset = process->fds[fd].fpos;

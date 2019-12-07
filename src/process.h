@@ -14,8 +14,6 @@
 #define FD_INV      -1
 #define FD_MAX      8
 
-typedef struct pcb_t pcb_t;
-
 struct pcb_t {
     int32_t pid;
     uint32_t state;
@@ -29,7 +27,7 @@ struct pcb_t {
     uint32_t task_esp;
     uint32_t task_ebp;
     tty_t* tty;
-    pcb_t* parent;
+    struct pcb_t* parent;
     fd_t fds[FD_MAX];
 };
 
@@ -40,8 +38,8 @@ struct pcb_t {
 #define PROC_SLEEP  1
 #define PROC_ACTIVE 2
 
-extern pcb_t* pcb[PROC_MAX];
-extern pcb_t* proc0;
+extern struct pcb_t* pcb[PROC_MAX];
+extern struct pcb_t* proc0;
 
 void init_pcb(void);
 

@@ -7,13 +7,13 @@
 
 #include "memory.h"
 
-pcb_t* pcb[PROC_MAX];
-pcb_t* proc0;
+struct pcb_t* pcb[PROC_MAX];
+struct pcb_t* proc0;
 
 void init_pcb(void) {
     int32_t i;
     for (i = 0; i < PROC_MAX; ++i) {
-        pcb[i] = (pcb_t*)(PROCESS_BASE - i * STACK_SIZE);
+        pcb[i] = (struct pcb_t*)(PROCESS_BASE - i * STACK_SIZE);
         pcb[i]->state = PROC_FREE;
     }
 
