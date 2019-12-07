@@ -1,0 +1,4 @@
+[
+    { include: ["<stdint.h>", "public", '"types.h"', "public"] },
+    { symbol: ["NULL", "private", '"types.h"', "public"] }
+]

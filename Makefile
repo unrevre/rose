@@ -1,4 +1,5 @@
 CC = i386-elf-gcc
+MAKE = make
 
 CFLAGS += -g -m32 -Wall -fno-builtin -fno-stack-protector
 ASFLAGS +=
@@ -33,7 +34,12 @@ $(BLDDIR)/%.o: $(SRCDIR)/%.c
 $(BLDDIR)/%.o: $(SRCDIR)/%.S
 	$(CC) $(CPPFLAGS) $(ASFLAGS) -MMD -c -o $@ $<
 
-.PHONY: rose clean mkdir
+.PHONY: rose iwyu clean mkdir
+
+iwyu:
+	$(MAKE) -k 'CC=include-what-you-use \
+		-Xiwyu --no_fwd_decls \
+		-Xiwyu --mapping_file=.rose.imp'
 
 clean:
 	rm -f $(BLDDIR)/* $(IMGDIR)/$(IMAGE)
