@@ -15,7 +15,7 @@
 #ifndef ASM
 
 /* The multiboot header. */
-typedef struct {
+struct multiboot_header_t {
     uint32_t magic;
     uint32_t flags;
     uint32_t checksum;
@@ -24,18 +24,18 @@ typedef struct {
     uint32_t load_end_addr;
     uint32_t bss_end_addr;
     uint32_t entry_addr;
-} multiboot_header_t;
+};
 
 /* The section header table for ELF. */
-typedef struct {
+struct elf_section_header_table_t {
     uint32_t num;
     uint32_t size;
     uint32_t addr;
     uint32_t shndx;
-} elf_section_header_table_t;
+};
 
 /* The multiboot information. */
-typedef struct {
+struct multiboot_info_t {
     uint32_t flags;
     uint32_t mem_lower;
     uint32_t mem_upper;
@@ -43,27 +43,27 @@ typedef struct {
     uint32_t cmdline;
     uint32_t mods_count;
     uint32_t mods_addr;
-    elf_section_header_table_t elf_sec;
+    struct elf_section_header_table_t elf_sec;
     uint32_t mmap_length;
     uint32_t mmap_addr;
-} multiboot_info_t;
+};
 
-typedef struct {
+struct module_t {
     uint32_t mod_start;
     uint32_t mod_end;
     uint32_t string;
     uint32_t reserved;
-} module_t;
+};
 
 /* The memory map. Note that offset 0 is base_addr_low and not size. */
-typedef struct {
+struct memory_map_t {
     uint32_t size;
     uint32_t base_addr_low;
     uint32_t base_addr_high;
     uint32_t length_low;
     uint32_t length_high;
     uint32_t type;
-} memory_map_t;
+};
 
 #endif /* ASM */
 

@@ -23,7 +23,7 @@
 #define CHECK_FLAG(flags, bit)  ((flags) & (1 << (bit)))
 
 void entry(uint32_t magic, uint32_t addr) {
-    multiboot_info_t *mbi;
+    struct multiboot_info_t *mbi;
 
     /* Initialise terminal */
     init_tty();
@@ -38,7 +38,7 @@ void entry(uint32_t magic, uint32_t addr) {
     }
 
     /* Set MBI to the address of the Multiboot information structure */
-    mbi = (multiboot_info_t *)addr;
+    mbi = (struct multiboot_info_t *)addr;
 
     /* Print flags */
     printf("flags = 0x%#x\n", mbi->flags);
@@ -57,7 +57,7 @@ void entry(uint32_t magic, uint32_t addr) {
         printf("cmdline = %s\n", (int8_t*)mbi->cmdline);
 
     if (CHECK_FLAG(mbi->flags, 3)) {
-        module_t* mod = (module_t*)mbi->mods_addr;
+        struct module_t* mod = (struct module_t*)mbi->mods_addr;
 
         int32_t mod_count = 0;
         while (mod_count < mbi->mods_count) {
@@ -80,7 +80,7 @@ void entry(uint32_t magic, uint32_t addr) {
 
     /* Check validity of ELF section header table */
     if (CHECK_FLAG(mbi->flags, 5)) {
-        elf_section_header_table_t* elf_sec = &(mbi->elf_sec);
+        struct elf_section_header_table_t* elf_sec = &(mbi->elf_sec);
 
         printf("elf: num = %u, size = 0x%#x, addr = 0x%#x, shndx = 0x%#x\n",
             elf_sec->num, elf_sec->size, elf_sec->addr, elf_sec->shndx);
@@ -88,13 +88,13 @@ void entry(uint32_t magic, uint32_t addr) {
 
     /* Check validity of mmap_* values */
     if (CHECK_FLAG(mbi->flags, 6)) {
-        memory_map_t* mmap;
+        struct memory_map_t* mmap;
 
         printf(" mmap_addr = 0x%#x, mmap_length = 0x%x\n",
             mbi->mmap_addr, mbi->mmap_length);
-        for (mmap = (memory_map_t*)mbi->mmap_addr;
+        for (mmap = (struct memory_map_t*)mbi->mmap_addr;
                 (uint32_t)mmap < mbi->mmap_addr + mbi->mmap_length;
-                mmap = (memory_map_t*)((uint32_t)mmap + mmap->size
+                mmap = (struct memory_map_t*)((uint32_t)mmap + mmap->size
                     + sizeof(mmap->size))) {
             printf(" size = 0x%x,   base_addr = 0x%#x%#x\n"
                 " type = 0x%x,   `length    = 0x%#x%#x\n",
@@ -105,7 +105,7 @@ void entry(uint32_t magic, uint32_t addr) {
 
     /* Construct a LDT entry in the GDT */
     {
-        seg_desc_t the_ldt_desc;
+        struct seg_desc_t the_ldt_desc;
         the_ldt_desc.granularity    = 0;
         the_ldt_desc.opsize         = 1;
         the_ldt_desc.reserved       = 0;
@@ -122,7 +122,7 @@ void entry(uint32_t magic, uint32_t addr) {
 
     /* Construct a TSS entry in the GDT */
     {
-        seg_desc_t the_tss_desc;
+        struct seg_desc_t the_tss_desc;
         the_tss_desc.granularity    = 0;
         the_tss_desc.opsize         = 0;
         the_tss_desc.reserved       = 0;
@@ -160,7 +160,7 @@ void entry(uint32_t magic, uint32_t addr) {
 
     /* Assume filesystem is the first module */
     if (CHECK_FLAG(mbi->flags, 3) && mbi->mods_count)
-        init_fs((struct fs_t*)((module_t*)mbi->mods_addr)->mod_start);
+        init_fs((struct fs_t*)((struct module_t*)mbi->mods_addr)->mod_start);
 
     /* Map kernel memory block (including video memory) */
     map_memory_page(VMEM_VIDEO, PMEM_VIDEO, SUPERVISOR, page_table_kernel);

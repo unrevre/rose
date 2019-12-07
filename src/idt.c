@@ -9,7 +9,7 @@
 #include "x86_desc.h"
 
 void init_idt(void) {
-    idt_desc_t interrupt_gate;
+    struct idt_desc_t interrupt_gate;
     interrupt_gate.seg_selector = KERNEL_CS;
     interrupt_gate.reserved4 = 0;
     interrupt_gate.reserved3 = 0;
@@ -20,7 +20,7 @@ void init_idt(void) {
     interrupt_gate.dpl = 0;
     interrupt_gate.present = 1;
 
-    idt_desc_t trap_gate;
+    struct idt_desc_t trap_gate;
     trap_gate.seg_selector = KERNEL_CS;
     trap_gate.reserved4 = 0;
     trap_gate.reserved3 = 1;

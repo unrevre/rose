@@ -25,14 +25,14 @@
 #ifndef ASM
 
 /* Used to load descriptor base registers (e.g. GDTR, IDTR) */
-typedef struct {
+struct x86_desc_t {
     uint16_t padding;
     uint16_t size;
     uint32_t addr;
-} x86_desc_t;
+};
 
 /* Segment descriptor */
-typedef struct {
+struct seg_desc_t {
     uint16_t seg_lim_15_00;
     uint16_t base_15_00;
     uint8_t base_23_16;
@@ -46,10 +46,10 @@ typedef struct {
     uint32_t opsize             : 1;
     uint32_t granularity        : 1;
     uint8_t base_31_24;
-} __attribute__((packed)) seg_desc_t;
+} __attribute__((packed));
 
 /* TSS structure */
-typedef struct {
+struct tss_t {
     uint16_t prev_task_link;
     uint16_t prev_task_link_pad;
 
@@ -103,21 +103,21 @@ typedef struct {
     uint16_t debug_trap : 1;
     uint16_t io_pad : 15;
     uint16_t io_base_addr;
-} __attribute__((packed)) tss_t;
+} __attribute__((packed));
 
 /* Some external descriptors declared in .S files */
-extern x86_desc_t gdt_desc;
-extern seg_desc_t gdt_desc_ptr;
+extern struct x86_desc_t gdt_desc;
+extern struct seg_desc_t gdt_desc_ptr;
 extern uint32_t gdt;
 
 extern uint16_t ldt_desc;
 extern uint32_t ldt_size;
-extern seg_desc_t ldt_desc_ptr;
+extern struct seg_desc_t ldt_desc_ptr;
 extern uint32_t ldt;
 
 extern uint32_t tss_size;
-extern seg_desc_t tss_desc_ptr;
-extern tss_t tss;
+extern struct seg_desc_t tss_desc_ptr;
+extern struct tss_t tss;
 
 /* Sets runtime-settable parameters in the GDT entry for the LDT */
 #define SET_LDT_PARAMS(str, addr, lim)                          \
@@ -140,7 +140,7 @@ do {                                                            \
 } while (0)
 
 /* An interrupt descriptor entry (goes into the IDT) */
-typedef struct {
+struct idt_desc_t {
     uint16_t offset_15_00;
     uint16_t seg_selector;
     uint8_t reserved4;
@@ -152,12 +152,12 @@ typedef struct {
     uint32_t dpl                : 2;
     uint32_t present            : 1;
     uint16_t offset_31_16;
-} __attribute__((packed)) idt_desc_t;
+} __attribute__((packed));
 
 /* The IDT itself (declared in x86_desc.S) */
-extern idt_desc_t idt[VEC_MAX];
+extern struct idt_desc_t idt[VEC_MAX];
 /* The descriptor used to load the IDTR */
-extern x86_desc_t idt_desc_ptr;
+extern struct x86_desc_t idt_desc_ptr;
 
 /* Sets runtime parameters for an IDT entry */
 #define SET_IDT_ENTRY(str, handler)                                 \
