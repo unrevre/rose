@@ -11,15 +11,11 @@
 volatile uint32_t rtc_flag;
 
 void init_rtc(void) {
-    cli();
-
     uint8_t prev;
     outb(RTC_SREG_B, RTC_SREG_PORT);
     prev = inb(RTC_DATA_PORT);
     outb(RTC_SREG_B, RTC_SREG_PORT);
     outb(prev | 0x40, RTC_DATA_PORT);
-
-    sti();
 
     rtc_flag = RTC_OPEN;
 }
