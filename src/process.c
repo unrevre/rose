@@ -23,7 +23,7 @@ void init_pcb(void) {
 int32_t alloc_pid(void) {
     int32_t i;
     for (i = 0; i < PROC_MAX; ++i)
-        if (!pcb[i]->state)
+        if (pcb[i]->state == PROC_FREE)
             return i;
 
     return PROC_INV;

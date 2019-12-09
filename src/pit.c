@@ -7,6 +7,7 @@
 
 #include "i8259.h"
 #include "lib.h"
+#include "process.h"
 #include "schedule.h"
 #include "types.h"
 
@@ -23,6 +24,6 @@ void handle_pit(void) {
     sti();
 
     int32_t pid = schedule_next();
-    if (pid != -1)
+    if (pid != PROC_INV)
         raise(pid);
 }
