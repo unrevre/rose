@@ -70,7 +70,7 @@ uint32_t tty_buffer(struct tty_t* tty) {
 /* File operations (tty) */
 
 int32_t tty_read(int32_t fd, int8_t* buf, int32_t nbytes) {
-    struct tty_t* tty = tty0;
+    struct tty_t* tty = proc0->tty;
 
     while (!(tty->status & TTY_READ));
 
@@ -87,11 +87,11 @@ int32_t tty_read(int32_t fd, int8_t* buf, int32_t nbytes) {
 }
 
 int32_t tty_write(const int8_t* buf, int32_t nbytes) {
-    struct pcb_t* process = proc0;
+    struct tty_t* tty = proc0->tty;
 
     int32_t i;
     for (i = 0; i < nbytes; ++i)
-        print(process->tty, buf[i]);
+        print(tty, buf[i]);
 
     return nbytes;
 }
