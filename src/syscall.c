@@ -85,11 +85,11 @@ int32_t execute(const int8_t* command) {
     if (*((uint32_t*)header) != ELF_HEADER)
         return -1;
 
+    cli();
+
     int32_t pid = alloc_pid();
     if (pid == PROC_INV)
         return -1;
-
-    cli();
 
     struct pcb_t* parent = proc0;
     struct pcb_t* process = pcb[pid];
@@ -149,8 +149,6 @@ int32_t execute(const int8_t* command) {
     enable_paging();
 
     proc0 = process;
-
-    sti();
 
     read_data(inode, 0, (int8_t*)0x8048000, BLOCK_4MB);
     uint32_t* entry_point = (uint32_t*)(*(uint32_t*)0x8048018);
