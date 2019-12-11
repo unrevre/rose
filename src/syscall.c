@@ -35,7 +35,7 @@ int32_t halt(uint8_t status) {
         map_memory_block(VMEM_USER, PMEM_USER + pid * BLOCK_4MB, USER);
         enable_paging();
 
-        tss.esp0 = KERNEL_BASE - pid * STACK_SIZE;
+        tss.esp0 = PROCESS_BASE - pid * STACK_SIZE;
     }
 
     proc0 = parent;
@@ -154,7 +154,7 @@ int32_t execute(const int8_t* command) {
     uint32_t* entry_point = (uint32_t*)(*(uint32_t*)0x8048018);
 
     tss.ss0 = KERNEL_DS;
-    tss.esp0 = KERNEL_BASE - pid * STACK_SIZE;
+    tss.esp0 = PROCESS_BASE - pid * STACK_SIZE;
 
     asm volatile("                      \n\
                  pushl  $0x002B         \n\

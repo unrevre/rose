@@ -53,7 +53,7 @@ void raise(int32_t pid) {
     map_video_memory((tty0 == tty) ? PMEM_VIDEO : tty_buffer(tty));
     enable_paging();
 
-    tss.esp0 = KERNEL_BASE - pid * STACK_SIZE;
+    tss.esp0 = PROCESS_BASE - pid * STACK_SIZE;
 
     sti();
 
