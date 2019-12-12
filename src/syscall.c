@@ -44,14 +44,12 @@ int32_t halt(uint8_t status) {
 
     asm volatile("                          \n\
                  movzbl %0, %%eax           \n\
-                 movl   %1, %%esp           \n\
-                 movl   %2, %%ebp           \n\
-                 movl   %3, 4(%%ebp)        \n\
+                 movl   %1, %%ebp           \n\
+                 movl   %2, 4(%%ebp)        \n\
                  jmp    halt_process        \n\
                  "
                  :
                  : "rm" (status),
-                   "rm" (process->esp),
                    "rm" (process->ebp),
                    "rm" (process->retaddr)
                  : "eax"
@@ -96,11 +94,9 @@ int32_t execute(const int8_t* command) {
 
     if (parent != NULL) {
         asm volatile("                      \n\
-                     movl   %%esp, %0       \n\
-                     movl   %%ebp, %1       \n\
+                     movl   %%ebp, %0       \n\
                      "
-                     : "=rm" (parent->task_esp),
-                       "=rm" (parent->task_ebp)
+                     : "=rm" (parent->task_ebp)
                     );
     }
 
@@ -115,12 +111,10 @@ int32_t execute(const int8_t* command) {
     process->state = PROC_ACTIVE;
 
     asm volatile("                      \n\
-                 leal   4(%%ebp), %0    \n\
-                 movl   %%ebp, %1       \n\
-                 movl   4(%%ebp), %2    \n\
+                 movl   %%ebp, %0       \n\
+                 movl   4(%%ebp), %1    \n\
                  "
-                 : "=rm" (process->esp),
-                   "=rm" (process->ebp),
+                 : "=rm" (process->ebp),
                    "=rm" (process->retaddr)
                 );
 

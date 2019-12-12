@@ -36,11 +36,9 @@ void raise(int32_t pid) {
 
     if (process != NULL) {
         asm volatile("                      \n\
-                     movl   %%esp, %0       \n\
-                     movl   %%ebp, %1       \n\
+                     movl   %%ebp, %0       \n\
                      "
-                     : "=rm" (process->task_esp),
-                       "=rm" (process->task_ebp)
+                     : "=rm" (process->task_ebp)
                     );
     }
 
@@ -60,13 +58,11 @@ void raise(int32_t pid) {
     proc0 = target;
 
     asm volatile("                      \n\
-                 movl   %0, %%esp       \n\
-                 movl   %1, %%ebp       \n\
+                 movl   %0, %%ebp       \n\
                  leave                  \n\
                  ret                    \n\
                  "
                  :
-                 : "rm" (target->task_esp),
-                   "rm" (target->task_ebp)
+                 : "rm" (target->task_ebp)
                 );
 }

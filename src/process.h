@@ -16,14 +16,12 @@
 struct pcb_t {
     int32_t pid;
     uint32_t state;
-    uint32_t esp;
     uint32_t ebp;
     uint32_t retaddr;
     int8_t args[64];
     uint32_t sigmask;
     uint32_t sigqueue;
     int32_t* sighandle[NSIG];
-    uint32_t task_esp;
     uint32_t task_ebp;
     struct tty_t* tty;
     struct pcb_t* parent;
