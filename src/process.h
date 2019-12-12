@@ -31,7 +31,7 @@ struct pcb_t {
 };
 
 #define PROC_INV    -1
-#define PROC_MAX    4
+#define PROC_MAX    8
 
 #define PROC_FREE   0
 #define PROC_SLEEP  1
