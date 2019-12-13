@@ -15,10 +15,7 @@
 int32_t schedule_next(void) {
     struct pcb_t* process = proc0;
 
-    if (process == NULL)
-        return -1;
-
-    int32_t pid = process->pid + 1;
+    int32_t pid = process == NULL ? 0 : process->pid + 1;
 
     int32_t i;
     for (i = 1; i < PROC_MAX; ++i, ++pid) {
