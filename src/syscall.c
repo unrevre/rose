@@ -48,8 +48,8 @@ int32_t halt(uint8_t status) {
                  "
                  :
                  : "rm" (status),
-                   "rm" (process->ebp),
-                   "rm" (process->retaddr)
+                   "rm" (parent->ebp),
+                   "rm" (parent->retaddr)
                  : "eax"
                 );
 
@@ -90,28 +90,24 @@ int32_t execute(const int8_t* command) {
     struct pcb_t* parent = proc0;
     struct pcb_t* process = pcb[pid];
 
-    asm volatile("                      \n\
-                 movl   %%ebp, %0       \n\
-                 "
-                 : "=rm" (parent->task_ebp)
-                );
-
     if ((uint32_t)command < PMEM_USER)
         parent = pcb[0];
+
+    if (parent->pid != 0) {
+        asm volatile("                      \n\
+                     movl   %%ebp, %0       \n\
+                     movl   4(%%ebp), %1    \n\
+                     "
+                     : "=rm" (parent->ebp),
+                       "=rm" (parent->retaddr)
+                    );
+    }
 
     parent->state = PROC_SLEEP;
 
     process->parent = parent;
     process->pid = pid;
     process->state = PROC_ACTIVE;
-
-    asm volatile("                      \n\
-                 movl   %%ebp, %0       \n\
-                 movl   4(%%ebp), %1    \n\
-                 "
-                 : "=rm" (process->ebp),
-                   "=rm" (process->retaddr)
-                );
 
     strncpy(process->args, command + i, 64 - i);
 

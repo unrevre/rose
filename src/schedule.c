@@ -16,7 +16,7 @@ int32_t schedule_next(void) {
     int32_t pid = proc0->pid;
 
     int32_t i;
-    for (i = 1; i < PROC_MAX; ++i) {
+    for (i = 0; i < PROC_MAX; ++i) {
         pid = (pid + 1) & (PROC_MAX - 1);
         if (pcb[pid]->state == PROC_ACTIVE)
             return pid;
@@ -33,9 +33,12 @@ void raise(int32_t pid) {
         asm volatile("                      \n\
                      movl   %%ebp, %0       \n\
                      "
-                     : "=rm" (process->task_ebp)
+                     : "=rm" (process->ebp)
                     );
     }
+
+    if (process == target)
+        return;
 
     cli();
 
@@ -58,6 +61,6 @@ void raise(int32_t pid) {
                  ret                    \n\
                  "
                  :
-                 : "rm" (target->task_ebp)
+                 : "rm" (target->ebp)
                 );
 }

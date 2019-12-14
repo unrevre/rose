@@ -22,7 +22,6 @@ struct pcb_t {
     uint32_t sigmask;
     uint32_t sigqueue;
     int32_t* sighandle[NSIG];
-    uint32_t task_ebp;
     struct tty_t* tty;
     struct pcb_t* parent;
     struct fd_t fds[FD_MAX];
