@@ -6,6 +6,7 @@
 #include "process.h"
 
 #include "memory.h"
+#include "tty.h"
 
 struct pcb_t* pcb[PROC_MAX];
 struct pcb_t* proc0;
@@ -18,6 +19,18 @@ void init_pcb(void) {
     }
 
     proc0 = NULL;
+}
+
+void init_pid0(void) {
+    struct pcb_t* process = pcb[0];
+
+    process->pid = 0;
+    process->state = PROC_ACTIVE;
+    process->sigmask = 0xFFFFFFFF;
+    process->tty = tty0;
+    process->parent = NULL;
+
+    proc0 = process;
 }
 
 int32_t alloc_pid(void) {

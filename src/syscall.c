@@ -24,19 +24,17 @@ int32_t halt(uint8_t status) {
     struct pcb_t* parent = process->parent;
 
     process->state = PROC_FREE;
-    process->tty->pid = !parent ? PROC_INV : parent->pid;
+    process->tty->pid = parent->pid;
     --process->tty->nproc;
 
-    if (parent != NULL) {
-        int32_t pid = parent->pid;
-        parent->state = PROC_ACTIVE;
+    int32_t pid = parent->pid;
+    parent->state = PROC_ACTIVE;
 
-        disable_paging();
-        map_memory_block(VMEM_USER, PMEM_USER + pid * BLOCK_4MB, USER);
-        enable_paging();
+    disable_paging();
+    map_memory_block(VMEM_USER, PMEM_USER + pid * BLOCK_4MB, USER);
+    enable_paging();
 
-        tss.esp0 = PROCESS_BASE - pid * STACK_SIZE;
-    }
+    tss.esp0 = KERNEL_BASE - pid * STACK_SIZE;
 
     proc0 = parent;
 
@@ -92,19 +90,16 @@ int32_t execute(const int8_t* command) {
     struct pcb_t* parent = proc0;
     struct pcb_t* process = pcb[pid];
 
-    if (parent != NULL) {
-        asm volatile("                      \n\
-                     movl   %%ebp, %0       \n\
-                     "
-                     : "=rm" (parent->task_ebp)
-                    );
-    }
+    asm volatile("                      \n\
+                 movl   %%ebp, %0       \n\
+                 "
+                 : "=rm" (parent->task_ebp)
+                );
 
     if ((uint32_t)command < PMEM_USER)
-        parent = NULL;
+        parent = pcb[0];
 
-    if (parent != NULL)
-        parent->state = PROC_SLEEP;
+    parent->state = PROC_SLEEP;
 
     process->parent = parent;
     process->pid = pid;
@@ -126,7 +121,7 @@ int32_t execute(const int8_t* command) {
 
     struct tty_t* active = tty0;
 
-    process->tty = parent ? parent->tty : active;
+    process->tty = parent->pid > 0 ? parent->tty : active;
     process->tty->pid = pid;
     ++process->tty->nproc;
 
@@ -149,7 +144,7 @@ int32_t execute(const int8_t* command) {
     uint32_t* entry_point = (uint32_t*)(*(uint32_t*)0x8048018);
 
     tss.ss0 = KERNEL_DS;
-    tss.esp0 = PROCESS_BASE - pid * STACK_SIZE;
+    tss.esp0 = KERNEL_BASE - pid * STACK_SIZE;
 
     asm volatile("                      \n\
                  pushl  $0x002B         \n\

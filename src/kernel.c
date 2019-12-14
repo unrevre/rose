@@ -158,6 +158,8 @@ void entry(uint32_t magic, uint32_t addr) {
     init_fd();
     init_pcb();
 
+    init_pid0();
+
     /* Assume filesystem is the first module */
     if (CHECK_FLAG(mbi->flags, 3) && mbi->mods_count)
         init_fs((struct fs_t*)((struct module_t*)mbi->mods_addr)->mod_start);

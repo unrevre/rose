@@ -13,13 +13,11 @@
 #include "x86_desc.h"
 
 int32_t schedule_next(void) {
-    struct pcb_t* process = proc0;
-
-    int32_t pid = process == NULL ? 0 : process->pid + 1;
+    int32_t pid = proc0->pid;
 
     int32_t i;
-    for (i = 1; i < PROC_MAX; ++i, ++pid) {
-        pid = pid & (PROC_MAX - 1);
+    for (i = 1; i < PROC_MAX; ++i) {
+        pid = (pid + 1) & (PROC_MAX - 1);
         if (pcb[pid]->state == PROC_ACTIVE)
             return pid;
     }
@@ -48,7 +46,7 @@ void raise(int32_t pid) {
     map_video_memory((tty0 == tty) ? PMEM_VIDEO : tty_buffer(tty));
     enable_paging();
 
-    tss.esp0 = PROCESS_BASE - pid * STACK_SIZE;
+    tss.esp0 = KERNEL_BASE - pid * STACK_SIZE;
 
     sti();
 
