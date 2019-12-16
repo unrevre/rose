@@ -18,8 +18,6 @@
 #define ELF_HEADER  0x464C457F
 
 int32_t halt(uint8_t status) {
-    cli();
-
     struct pcb_t* process = proc0;
     struct pcb_t* parent = process->parent;
 
@@ -30,15 +28,17 @@ int32_t halt(uint8_t status) {
     int32_t pid = parent->pid;
     parent->state = PROC_ACTIVE;
 
+    cli();
+
     disable_paging();
     map_memory_block(VMEM_USER, PMEM_USER + pid * BLOCK_4MB, USER);
     enable_paging();
 
+    sti();
+
     tss.esp0 = KERNEL_BASE - pid * STACK_SIZE;
 
     proc0 = parent;
-
-    sti();
 
     asm volatile("                          \n\
                  movzbl %0, %%eax           \n\
@@ -81,8 +81,6 @@ int32_t execute(const int8_t* command) {
     if (*((uint32_t*)header) != ELF_HEADER)
         return -1;
 
-    cli();
-
     int32_t pid = alloc_pid();
     if (pid == PROC_INV)
         return -1;
@@ -122,17 +120,13 @@ int32_t execute(const int8_t* command) {
     process->sigqueue = 0;
     memset(process->sighandle, 0, NSIG * sizeof(int32_t*));
 
+    cli();
+
     struct tty_t* active = tty0;
 
     process->tty = parent->pid > 0 ? parent->tty : active;
     process->tty->pid = pid;
     ++process->tty->nproc;
-
-    process->fds[0] = stdin;
-    process->fds[1] = stdout;
-
-    for (i = 2; i < FD_MAX; ++i)
-        process->fds[i].flags = FD_CLOSE;
 
     disable_paging();
     map_memory_block(VMEM_USER, PMEM_USER + pid * BLOCK_4MB, USER);
@@ -140,6 +134,14 @@ int32_t execute(const int8_t* command) {
     struct tty_t* tty = process->tty;
     map_video_memory((active == tty) ? PMEM_VIDEO : tty_buffer(tty));
     enable_paging();
+
+    sti();
+
+    process->fds[0] = stdin;
+    process->fds[1] = stdout;
+
+    for (i = 2; i < FD_MAX; ++i)
+        process->fds[i].flags = FD_CLOSE;
 
     proc0 = process;
 
