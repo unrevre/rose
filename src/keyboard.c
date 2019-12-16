@@ -91,6 +91,7 @@ void handle_kbd(void) {
     handle_key(scancode);
 
     sti();
+
 }
 
 void handle_key(uint32_t scancode) {
@@ -135,8 +136,8 @@ void handle_key(uint32_t scancode) {
             newline(tty0);
             break;
         case KEY_DOWN_BACKSPACE:
-            if (tty->line.index) {
-                tty->line.buffer[--tty->line.index] = '\0';
+            if (tty->index) {
+                tty->buffer[--tty->index] = '\0';
                 backspace(tty);
             }
             break;
@@ -145,7 +146,7 @@ void handle_key(uint32_t scancode) {
     uint8_t* char_map = flags.capslock ? char_map_caps : char_map_def;
 
     if (scancode < 0x40 && char_map[scancode]) {
-        if (tty->line.index == LINE_MAX) {
+        if (tty->index == LINE_MAX) {
             tty->status |= TTY_READ;
             newline(tty);
         }
@@ -153,7 +154,7 @@ void handle_key(uint32_t scancode) {
         if (flags.shift)
             scancode += 0x40;
 
-        tty->line.buffer[tty->line.index] = char_map[scancode];
-        print(tty, tty->line.buffer[tty->line.index++]);
+        tty->buffer[tty->index] = char_map[scancode];
+        print(tty, tty->buffer[tty->index++]);
     }
 }

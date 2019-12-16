@@ -6,8 +6,9 @@
 #ifndef TTY_H
 #define TTY_H
 
-#include "keyboard.h"
 #include "types.h"
+
+#define LINE_MAX    256
 
 struct tty_t {
     uint32_t status;
@@ -15,7 +16,8 @@ struct tty_t {
     int32_t nproc;
     int32_t offset;
     uint8_t* address;
-    struct lbuf_t line;
+    int32_t index;
+    int8_t buffer[LINE_MAX];
 };
 
 #define TTY_IDLE    0

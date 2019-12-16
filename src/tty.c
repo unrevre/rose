@@ -30,8 +30,8 @@ void start_tty(int32_t index) {
     swap_tty(index);
 
     if (tty->status == TTY_IDLE) {
-        tty->line.index = 0;
-        memset(tty->line.buffer, 0, LINE_MAX * sizeof(uint8_t));
+        tty->index = 0;
+        memset(tty->buffer, 0, LINE_MAX * sizeof(uint8_t));
 
         tty->status = TTY_ACTIVE;
         tty->pid = PROC_INV;
@@ -74,12 +74,12 @@ int32_t tty_read(int32_t fd, int8_t* buf, int32_t nbytes) {
 
     while (!(tty->status & TTY_READ));
 
-    int32_t length = strnlen(tty->line.buffer, nbytes);
-    strncpy(buf, tty->line.buffer, length);
+    int32_t length = strnlen(tty->buffer, nbytes);
+    strncpy(buf, tty->buffer, length);
 
-    memmove(tty->line.buffer, tty->line.buffer + length, LINE_MAX - length);
-    memset(tty->line.buffer + LINE_MAX - length, '\0', length);
-    tty->line.index = tty->line.index - length;
+    memmove(tty->buffer, tty->buffer + length, LINE_MAX - length);
+    memset(tty->buffer + LINE_MAX - length, '\0', length);
+    tty->index = tty->index - length;
 
     tty->status &= ~TTY_READ;
 

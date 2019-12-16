@@ -19,13 +19,6 @@ struct modifiers_t {
     int32_t capslock;
 };
 
-#define LINE_MAX    256
-
-struct lbuf_t {
-    int8_t buffer[LINE_MAX];
-    int32_t index;
-};
-
 void init_kbd(void);
 
 void handle_kbd(void);
