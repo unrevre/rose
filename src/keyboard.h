@@ -6,6 +6,7 @@
 #ifndef KEYBOARD_H
 #define KEYBOARD_H
 
+#include "tty.h"
 #include "types.h"
 
 #define KBD_DATA_PORT           0x60
@@ -22,6 +23,6 @@ struct modifiers_t {
 void init_kbd(void);
 
 void handle_kbd(void);
-void handle_key(uint32_t scancode);
+void handle_key(struct tty_t* tty, uint32_t scancode);
 
 #endif /* KEYBOARD_H */

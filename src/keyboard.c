@@ -8,7 +8,6 @@
 #include "i8259.h"
 #include "lib.h"
 #include "signal.h"
-#include "tty.h"
 #include "video.h"
 
 #define KEY_DOWN_LEFT_CTRL      0x1D
@@ -88,15 +87,14 @@ void handle_kbd(void) {
         scancode = (scancode << 8) | next;
     }
 
-    handle_key(scancode);
+    struct tty_t* tty = tty0;
 
     sti();
 
+    handle_key(tty, scancode);
 }
 
-void handle_key(uint32_t scancode) {
-    struct tty_t* tty = tty0;
-
+void handle_key(struct tty_t* tty, uint32_t scancode) {
     if (flags.ctrl) {
         switch (scancode) {
             case KEY_DOWN_C:
