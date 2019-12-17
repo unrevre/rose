@@ -38,7 +38,6 @@ extern struct pcb_t* pcb[PROC_MAX];
 extern struct pcb_t* proc0;
 
 void init_pcb(void);
-void init_pid0(void);
 
 int32_t alloc_pid(void);
 

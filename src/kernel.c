@@ -25,8 +25,27 @@
 void entry(uint32_t magic, uint32_t addr) {
     struct multiboot_info_t *mbi;
 
-    /* Initialise terminal */
+    /* Initialise file descriptors, terminals, processes */
+    init_fd();
     init_tty();
+    init_pcb();
+
+    /* Initialise pid 0 */
+    struct pcb_t* process = pcb[0];
+
+    process->pid = 0;
+    process->state = PROC_ACTIVE;
+    process->sigmask = 0xFFFFFFFF;
+    process->tty = tty0;
+    process->parent = NULL;
+
+    asm volatile("                  \n\
+                 leal   .1, %0      \n\
+                 "
+                 : "=rm" (process->retaddr)
+                );
+
+    proc0 = process;
 
     /* Clear screen */
     clear(tty0);
@@ -154,17 +173,6 @@ void entry(uint32_t magic, uint32_t addr) {
     init_pit();
     init_kbd();
     init_rtc();
-
-    init_fd();
-    init_pcb();
-
-    init_pid0();
-
-    asm volatile("                  \n\
-                 leal   .1, %0      \n\
-                 "
-                 : "=rm" (pcb[0]->retaddr)
-                );
 
     /* Assume filesystem is the first module */
     if (CHECK_FLAG(mbi->flags, 3) && mbi->mods_count)
