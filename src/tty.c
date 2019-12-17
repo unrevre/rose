@@ -17,7 +17,7 @@ struct tty_t* tty0;
 void init_tty(void) {
     int32_t i;
     for (i = 0; i < TTY_MAX; ++i) {
-        ttys[i].status = TTY_IDLE;
+        ttys[i].status = TTY_PEND;
         ttys[i].offset = 0;
     }
 
@@ -29,13 +29,11 @@ void start_tty(int32_t index) {
 
     swap_tty(index);
 
-    if (tty->status == TTY_IDLE) {
+    if (tty->nproc == 0) {
         tty->index = 0;
         memset(tty->buffer, 0, LINE_MAX * sizeof(uint8_t));
 
-        tty->status = TTY_ACTIVE;
         tty->pid = PROC_INV;
-        tty->nproc = 0;
     }
 }
 

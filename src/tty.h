@@ -20,9 +20,8 @@ struct tty_t {
     int8_t buffer[LINE_MAX];
 };
 
-#define TTY_IDLE    0
-#define TTY_ACTIVE  1
-#define TTY_READ    2
+#define TTY_PEND    0
+#define TTY_READ    1
 
 #define TTY_MAX     4
 
