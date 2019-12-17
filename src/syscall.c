@@ -88,23 +88,20 @@ int32_t execute(const int8_t* command) {
     struct pcb_t* parent = proc0;
     struct pcb_t* process = pcb[pid];
 
-    if ((uint32_t)command < PMEM_USER) {
-        asm volatile("                      \n\
-                     movl   %%ebp, %0       \n\
-                     "
-                     : "=rm" (parent->ebp)
-                    );
+    asm volatile("                      \n\
+                 movl   %%ebp, %0       \n\
+                 "
+                 : "=rm" (parent->ebp)
+                );
 
+    if ((uint32_t)command < PMEM_USER)
         parent = pcb[0];
-    }
 
     if (parent->pid != 0) {
         asm volatile("                      \n\
-                     movl   %%ebp, %0       \n\
-                     movl   4(%%ebp), %1    \n\
+                     movl   4(%%ebp), %0    \n\
                      "
-                     : "=rm" (parent->ebp),
-                       "=rm" (parent->retaddr)
+                     : "=rm" (parent->retaddr)
                     );
     }
 
