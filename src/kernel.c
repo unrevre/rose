@@ -160,6 +160,12 @@ void entry(uint32_t magic, uint32_t addr) {
 
     init_pid0();
 
+    asm volatile("                  \n\
+                 leal   .1, %0      \n\
+                 "
+                 : "=rm" (pcb[0]->retaddr)
+                );
+
     /* Assume filesystem is the first module */
     if (CHECK_FLAG(mbi->flags, 3) && mbi->mods_count)
         init_fs((struct fs_t*)((struct module_t*)mbi->mods_addr)->mod_start);
