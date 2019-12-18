@@ -7,8 +7,15 @@
 
 #include "i8259.h"
 #include "lib.h"
+#include "process.h"
+#include "signal.h"
 
-volatile uint32_t rtc_flag;
+volatile uint32_t status;
+volatile uint32_t period;
+volatile uint32_t count;
+
+#define PERIOD_1S   65536
+#define PERIOD_ALRM (PERIOD_1S * 10)
 
 void init_rtc(void) {
     uint8_t prev;
@@ -17,7 +24,8 @@ void init_rtc(void) {
     outb(RTC_SREG_B, RTC_SREG_PORT);
     outb(prev | 0x40, RTC_DATA_PORT);
 
-    rtc_flag = RTC_OPEN;
+    status = RTC_OPEN;
+    count = 0;
 }
 
 void handle_rtc(void) {
@@ -27,9 +35,16 @@ void handle_rtc(void) {
     outb(RTC_SREG_C, RTC_SREG_PORT);
     inb(RTC_DATA_PORT);
 
-    rtc_flag &= ~RTC_WAIT;
+    status &= ~RTC_WAIT;
 
     sti();
+
+    count += period;
+
+    if (count >= PERIOD_ALRM) {
+        count -= PERIOD_ALRM;
+        queue_signal(proc0->pid, SIGALRM);
+    }
 }
 
 int32_t set_rtc_frequency(uint32_t frequency) {
@@ -43,6 +58,8 @@ int32_t set_rtc_frequency(uint32_t frequency) {
     uint32_t rate = 0x6;
     while (frequency << rate != 0x10000)
         ++rate;
+
+    period = 1 << rate;
 
     cli();
 
@@ -58,31 +75,31 @@ int32_t set_rtc_frequency(uint32_t frequency) {
 }
 
 int32_t rtc_read(int32_t fd, int8_t* buf, int32_t nbytes) {
-    if (!(rtc_flag & RTC_OPEN))
+    if (!(status & RTC_OPEN))
         return -1;
 
-    rtc_flag |= RTC_WAIT;
-    while (rtc_flag & RTC_WAIT);
+    status |= RTC_WAIT;
+    while (status & RTC_WAIT);
 
     return 0;
 }
 
 int32_t rtc_write(const int8_t* buf, int32_t nbytes) {
-    if (!(rtc_flag & RTC_OPEN))
+    if (!(status & RTC_OPEN))
         return -1;
 
     return set_rtc_frequency(*(uint32_t*)buf);
 }
 
 int32_t rtc_open(void) {
-    if (!(rtc_flag & RTC_OPEN))
+    if (!(status & RTC_OPEN))
         return -1;
 
     return 0;
 }
 
 int32_t rtc_close(void) {
-    if (!(rtc_flag & RTC_OPEN))
+    if (!(status & RTC_OPEN))
         return -1;
 
     return 0;
