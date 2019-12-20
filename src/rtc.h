@@ -19,6 +19,8 @@
 #define RTC_OPEN        1
 #define RTC_WAIT        2
 
+#define RTC_FREQ_DEF    8
+
 void init_rtc(void);
 
 void handle_rtc(void);

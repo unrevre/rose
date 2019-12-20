@@ -24,6 +24,8 @@ void init_rtc(void) {
     outb(RTC_SREG_B, RTC_SREG_PORT);
     outb(prev | 0x40, RTC_DATA_PORT);
 
+    set_rtc_frequency(RTC_FREQ_DEF);
+
     status = RTC_OPEN;
     count = 0;
 }
