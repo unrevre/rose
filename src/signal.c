@@ -43,48 +43,34 @@ void deliver_signal(void) {
             case SIGUSR1:
             case SIGUSR2:
             default:
-                asm volatile("jmp   _after");
+                break;
         }
+    } else {
+        asm volatile("                              \n\
+                     movl   52(%%ebp), %%ecx        \n\
+                     subl   $0x8, %%ecx             \n\
+                     movl   $0x00000ab8, (%%ecx)    \n\
+                     movl   $0x9080cd00, 4(%%ecx)   \n\
+                     leal   8(%%ebp), %%eax         \n\
+                     subl   $0x34, %%ecx            \n\
+                     pushl  $0x34                   \n\
+                     pushl  %%eax                   \n\
+                     pushl  %%ecx                   \n\
+                     call   memcpy                  \n\
+                     popl   %%ecx                   \n\
+                     addl   $0x8, %%esp             \n\
+                     subl   $0x8, %%ecx             \n\
+                     movl   %0, 4(%%ecx)            \n\
+                     leal   60(%%ecx), %%eax        \n\
+                     movl   %%eax, (%%ecx)          \n\
+                     movl   %%ecx, 52(%%ebp)        \n\
+                     movl   %1, 40(%%ebp)           \n\
+                     "
+                     :
+                     : "r" (signum), "r" (handler)
+                     : "eax", "ecx", "edx"
+                    );
     }
-
-    asm volatile("                          \n\
-                 leal   8(%%ebp), %%eax     \n\
-                 movl   44(%%eax), %%ecx    \n\
-                 subl   $0x8, %%ecx         \n\
-                 pushl  %%eax               \n\
-                 pushl  $0x8                \n\
-                 leal   _sigreturn, %%edx   \n\
-                 pushl  %%edx               \n\
-                 pushl  %%ecx               \n\
-                 call   memcpy              \n\
-                 popl   %%ecx               \n\
-                 addl   $0x8, %%esp         \n\
-                 popl   %%eax               \n\
-                 subl   $0x34, %%ecx        \n\
-                 pushl  $0x34               \n\
-                 pushl  %%eax               \n\
-                 pushl  %%ecx               \n\
-                 call   memcpy              \n\
-                 popl   %%ecx               \n\
-                 popl   %%eax               \n\
-                 addl   $0x4, %%esp         \n\
-                 subl   $0x8, %%ecx         \n\
-                 movl   %0, 4(%%ecx)        \n\
-                 leal   60(%%ecx), %%edx    \n\
-                 movl   %%edx, (%%ecx)      \n\
-                 movl   %%ecx, 44(%%eax)    \n\
-                 movl   %1, 32(%%eax)       \n\
-                 jmp    _after              \n\
-                 _sigreturn:                \n\
-                 movl   $0xa, %%eax         \n\
-                 int    $0x80               \n\
-                 nop                        \n\
-                 _after:                    \n\
-                 "
-                 :
-                 : "r" (signum), "r" (handler)
-                 : "eax", "ecx", "edx"
-                );
 
     process->sigmask = sigmask;
     process->sigqueue &= ~(0x1 << signum);
