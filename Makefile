@@ -24,9 +24,11 @@ DEPS := $(patsubst $(BLDDIR)/%.o,$(BLDDIR)/%.d,$(OBJS))
 
 all: mkdir rose
 
-rose: $(OBJS)
-	$(CC) $(LDFLAGS) $(OBJS) -Ttext=0x100000 -o $(IMGDIR)/$(IMAGE)
+rose: $(IMGDIR)/$(IMAGE)
 	$(SCRDIR)/makeimage.sh
+
+$(IMGDIR)/$(IMAGE): $(OBJS)
+	$(CC) $(LDFLAGS) $(OBJS) -Ttext=0x100000 -o $(IMGDIR)/$(IMAGE)
 
 $(BLDDIR)/%.o: $(SRCDIR)/%.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -MMD -c -o $@ $<
@@ -34,17 +36,17 @@ $(BLDDIR)/%.o: $(SRCDIR)/%.c
 $(BLDDIR)/%.o: $(SRCDIR)/%.S
 	$(CC) $(CPPFLAGS) $(ASFLAGS) -MMD -c -o $@ $<
 
-.PHONY: rose iwyu clean mkdir
-
 iwyu:
 	$(MAKE) -k 'CC=include-what-you-use \
 		-Xiwyu --no_fwd_decls \
 		-Xiwyu --mapping_file=.rose.imp'
 
+mkdir:
+	@mkdir -p $(IMGDIR) $(BLDDIR)
+
 clean:
 	rm -f $(BLDDIR)/* $(IMGDIR)/$(IMAGE)
 
-mkdir:
-	@mkdir -p $(IMGDIR) $(BLDDIR)
+.PHONY: rose iwyu mkdir clean
 
 -include $(DEPS)
