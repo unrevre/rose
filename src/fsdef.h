@@ -32,16 +32,7 @@ struct block_t {
     int8_t raw[4096];
 };
 
-#define INODE_MAX   0x24
-#define BLOCK_MAX   0x4E
-
-struct fs_t {
-    struct boot_t boot;
-    struct inode_t inodes[INODE_MAX];
-    struct block_t blocks[BLOCK_MAX];
-};
-
-void init_fs(struct fs_t* address);
+void init_fs(int8_t* address);
 
 int32_t read_data(int32_t inode, int32_t offset, int8_t* buf, int32_t nbytes);
 int32_t query_inode(const int8_t* fname);

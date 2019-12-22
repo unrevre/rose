@@ -9,27 +9,35 @@
 #include "lib.h"
 #include "process.h"
 
-struct fs_t* fs;
+struct boot_t* boot;
+struct inode_t* inodes;
+struct block_t* blocks;
 
-void init_fs(struct fs_t* address) {
-    fs = address;
+void init_fs(int8_t* address) {
+    boot = (struct boot_t*)address;
+
+    address += sizeof(struct boot_t);
+    inodes = (struct inode_t*)address;
+
+    address += boot->ninode * sizeof(struct inode_t);
+    blocks = (struct block_t*)address;
 }
 
 int32_t read_data(int32_t inode, int32_t offset, int8_t* buf, int32_t nbytes) {
     if (nbytes < 0)
         return -1;
 
-    if (inode >= INODE_MAX)
+    if (inode >= boot->ninode)
         return -1;
 
     int32_t end = nbytes + offset;
-    if (fs->inodes[inode].size < end)
-        end = fs->inodes[inode].size;
+    if (inodes[inode].size < end)
+        end = inodes[inode].size;
 
     int32_t i;
     int32_t bytes = 0;
     for (i = offset / 4096; i <= end / 4096; ++i) {
-        int8_t* src = fs->blocks[fs->inodes[inode].block[i]].raw;
+        int8_t* src = blocks[inodes[inode].block[i]].raw;
 
         int32_t partial = 4096;
         if (i == offset / 4096) {
@@ -52,8 +60,8 @@ int32_t query_inode(const int8_t* fname) {
 
     int32_t i;
     for (i = 0; i < 63; ++i) {
-        if (!strncmp(fname, fs->boot.dentries[i].fname, 32))
-            return fs->boot.dentries[i].inode;
+        if (!strncmp(fname, boot->dentries[i].fname, 32))
+            return boot->dentries[i].inode;
     }
 
     return -1;
@@ -65,8 +73,8 @@ struct dentry_t* query_dentry(const int8_t* fname) {
 
     int32_t i;
     for (i = 0; i < 63; ++i) {
-        if (!strncmp(fname, fs->boot.dentries[i].fname, 32))
-            return &fs->boot.dentries[i];
+        if (!strncmp(fname, boot->dentries[i].fname, 32))
+            return &boot->dentries[i];
     }
 
     return NULL;
@@ -78,11 +86,11 @@ int32_t dir_read(int32_t fd, int8_t* buf, int32_t nbytes) {
     struct pcb_t* process = proc0;
 
     int32_t dentry = process->fds[fd].fpos;
-    if (dentry == fs->boot.ndentry)
+    if (dentry == boot->ndentry)
         return 0;
 
     ++process->fds[fd].fpos;
-    strncpy(buf, fs->boot.dentries[dentry].fname, nbytes);
+    strncpy(buf, boot->dentries[dentry].fname, nbytes);
 
     return strnlen(buf, nbytes);
 }
