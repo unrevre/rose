@@ -96,12 +96,12 @@ void clear(struct tty_t* tty) {
 }
 
 void blink(void) {
-    int32_t* offset = &tty0->offset;
+    int32_t offset = tty0->offset;
 
     outb(CURSOR_LOW, VGA_INDEX_REGISTER);
-    outb((uint8_t)(*offset & 0xFF), VGA_DATA_REGISTER);
+    outb((uint8_t)(offset & 0xFF), VGA_DATA_REGISTER);
     outb(CURSOR_HIGH, VGA_INDEX_REGISTER);
-    outb((uint8_t)((*offset >> 8) & 0xFF), VGA_DATA_REGISTER);
+    outb((uint8_t)((offset >> 8) & 0xFF), VGA_DATA_REGISTER);
 }
 
 void vputc(uint8_t c) {
