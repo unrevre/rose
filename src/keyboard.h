@@ -14,12 +14,6 @@
 
 #define KBD_CONTINUE            0x30
 
-struct modifiers_t {
-    int32_t ctrl;
-    int32_t shift;
-    int32_t capslock;
-};
-
 void init_kbd(void);
 
 void handle_kbd(void);

@@ -69,12 +69,14 @@ static uint8_t char_map_caps[0x80] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
-struct modifiers_t flags;
+volatile int32_t fcaps;
+volatile int32_t fctrl;
+volatile int32_t fshift;
 
 void init_kbd(void) {
-    flags.ctrl = 0;
-    flags.shift = 0;
-    flags.capslock = 0;
+    fcaps = 0;
+    fctrl = 0;
+    fshift = 0;
 }
 
 void handle_kbd(void) {
@@ -95,7 +97,7 @@ void handle_kbd(void) {
 }
 
 void handle_key(struct tty_t* tty, uint32_t scancode) {
-    if (flags.ctrl) {
+    if (fctrl) {
         switch (scancode) {
             case KEY_DOWN_C:
                 queue_signal(tty->pid, SIGINT);
@@ -112,22 +114,22 @@ void handle_key(struct tty_t* tty, uint32_t scancode) {
     switch (scancode) {
         case KEY_DOWN_LEFT_CTRL:
         case KEY_DOWN_RIGHT_CTRL:
-            ++flags.ctrl;
+            ++fctrl;
             break;
         case KEY_UP_LEFT_CTRL:
         case KEY_UP_RIGHT_CTRL:
-            --flags.ctrl;
+            --fctrl;
             break;
         case KEY_DOWN_LEFT_SHIFT:
         case KEY_DOWN_RIGHT_SHIFT:
-            ++flags.shift;
+            ++fshift;
             break;
         case KEY_UP_LEFT_SHIFT:
         case KEY_UP_RIGHT_SHIFT:
-            --flags.shift;
+            --fshift;
             break;
         case KEY_DOWN_CAPS:
-            flags.capslock ^= 0x1;
+            fcaps ^= 0x1;
             break;
         case KEY_DOWN_ENTER:
             tty->status |= TTY_READ;
@@ -141,7 +143,7 @@ void handle_key(struct tty_t* tty, uint32_t scancode) {
             break;
     }
 
-    uint8_t* char_map = flags.capslock ? char_map_caps : char_map_def;
+    uint8_t* char_map = fcaps ? char_map_caps : char_map_def;
 
     if (scancode < 0x40 && char_map[scancode]) {
         if (tty->index == LINE_MAX) {
@@ -149,7 +151,7 @@ void handle_key(struct tty_t* tty, uint32_t scancode) {
             newline(tty);
         }
 
-        if (flags.shift)
+        if (fshift)
             scancode += 0x40;
 
         tty->buffer[tty->index] = char_map[scancode];
