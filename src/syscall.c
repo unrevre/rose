@@ -53,7 +53,7 @@ int32_t halt(uint8_t status) {
                  : "eax"
                 );
 
-    return 0;
+    __builtin_unreachable();
 }
 
 int32_t execute(const int8_t* command) {
@@ -168,7 +168,7 @@ int32_t execute(const int8_t* command) {
                  : "rm" (entry_point)
                 );
 
-    return 0;
+    __builtin_unreachable();
 }
 
 int32_t read(int32_t fd, void* buf, int32_t nbytes) {
@@ -288,7 +288,6 @@ int32_t signal(int32_t signum, void* handler) {
 }
 
 int32_t sigreturn(void) {
-    int32_t retval;
     asm volatile("                          \n\
                  movl   52(%%ebp), %%edx    \n\
                  leal   4(%%edx), %%ecx     \n\
@@ -297,10 +296,12 @@ int32_t sigreturn(void) {
                  pushl  %%ecx               \n\
                  pushl  %%eax               \n\
                  call   memcpy              \n\
-                 movl   32(%%ebp), %0       \n\
+                 movl   32(%%ebp), %%eax    \n\
+                 leave                      \n\
+                 ret                        \n\
                  "
-                 : "=r" (retval)
+                 :
                 );
 
-    return retval;
+    __builtin_unreachable();
 }
