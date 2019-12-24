@@ -31,7 +31,7 @@
 #define KEY_DOWN_4              0x05
 #define KEY_DOWN_C              0x2E
 
-static uint8_t char_map_def[0x80] = {
+static uint8_t char_map[0x80] = {
     0x00, 0x00, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36,
     0x37, 0x38, 0x39, 0x30, 0x2D, 0x3D, 0x00, 0x00,
     0x71, 0x77, 0x65, 0x72, 0x74, 0x79, 0x75, 0x69,
@@ -50,7 +50,7 @@ static uint8_t char_map_def[0x80] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
-static uint8_t char_map_caps[0x80] = {
+static uint8_t caps_map[0x80] = {
     0x00, 0x00, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36,
     0x37, 0x38, 0x39, 0x30, 0x2D, 0x3D, 0x00, 0x00,
     0x51, 0x57, 0x45, 0x52, 0x54, 0x59, 0x55, 0x49,
@@ -143,18 +143,21 @@ void handle_key(struct tty_t* tty, uint32_t scancode) {
             break;
     }
 
-    uint8_t* char_map = fcaps ? char_map_caps : char_map_def;
+    if (scancode > 0x40)
+        return;
 
-    if (scancode < 0x40 && char_map[scancode]) {
+    uint8_t* cmap = fcaps ? caps_map : char_map;
+
+    if (fshift) scancode += 0x40;
+    uint8_t ch = cmap[scancode];
+
+    if (ch) {
         if (tty->index == LINE_MAX) {
             tty->status |= TTY_READ;
             newline(tty);
         }
 
-        if (fshift)
-            scancode += 0x40;
-
-        tty->buffer[tty->index] = char_map[scancode];
-        print(tty, tty->buffer[tty->index++]);
+        tty->buffer[tty->index++] = ch;
+        print(tty, ch);
     }
 }
