@@ -6,6 +6,7 @@
 #define ASM
 
 #include "memory.h"
+#include "syscall.h"
 
 .globl divide_error
 .globl debug
@@ -81,8 +82,6 @@ HANDLE_NULL simd_fp_exception
 HANDLE_NULL pit
 HANDLE_NULL kbd
 HANDLE_NULL rtc
-
-#define NSYS 0xA
 
 syscall:
     pushl   $0

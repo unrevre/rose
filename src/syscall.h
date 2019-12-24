@@ -8,6 +8,10 @@
 
 #include "types.h"
 
+#define NSYS    10
+
+#ifndef ASM
+
 int32_t halt(uint8_t status);
 int32_t execute(const int8_t* command);
 int32_t read(int32_t fd, void* buf, int32_t nbytes);
@@ -18,5 +22,7 @@ int32_t getargs(int8_t* buf, int32_t nbytes);
 int32_t vidmap(uint8_t** address);
 int32_t signal(int32_t signum, void* handler);
 int32_t sigreturn(void);
+
+#endif /* ASM */
 
 #endif /* SYSCALL_H */
