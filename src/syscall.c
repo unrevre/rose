@@ -88,6 +88,9 @@ int32_t execute(const int8_t* command) {
     struct pcb_t* parent = proc0;
     struct pcb_t* process = pcb[pid];
 
+    struct tty_t* active = tty0;
+    struct tty_t* tty = active;
+
     asm volatile("                      \n\
                  movl   %%ebp, %0       \n\
                  "
@@ -103,6 +106,8 @@ int32_t execute(const int8_t* command) {
                      "
                      : "=rm" (parent->retaddr)
                     );
+
+        tty = parent->tty;
     }
 
     parent->state = PROC_SLEEP;
@@ -117,18 +122,15 @@ int32_t execute(const int8_t* command) {
     process->sigqueue = 0;
     memset(process->sighandle, 0, NSIG * sizeof(int32_t*));
 
-    cli();
-
-    struct tty_t* active = tty0;
-
-    process->tty = parent->pid > 0 ? parent->tty : active;
+    process->tty = tty;
     process->tty->pid = pid;
     ++process->tty->nproc;
+
+    cli();
 
     disable_paging();
     map_memory_block(VMEM_USER, PMEM_USER + pid * BLOCK_4MB, USER);
 
-    struct tty_t* tty = process->tty;
     map_video_memory((active == tty) ? PMEM_VIDEO : tty_buffer(tty));
     enable_paging();
 
