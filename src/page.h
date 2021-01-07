@@ -38,10 +38,10 @@ struct pte_t {
     uint32_t page_base_address : 20;
 } __attribute__((packed));
 
-struct pde_t page_directory[1024];
+extern struct pde_t page_directory[1024];
 
-struct pte_t page_table_kernel[1024];
-struct pte_t page_table_user[1024];
+extern struct pte_t page_table_kernel[1024];
+extern struct pte_t page_table_user[1024];
 
 void init_paging(struct pde_t* address);
 void enable_paging(void);
